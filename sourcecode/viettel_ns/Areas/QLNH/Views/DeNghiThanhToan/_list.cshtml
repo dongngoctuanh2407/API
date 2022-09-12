@@ -1,0 +1,221 @@
+﻿@using Viettel.Models.QLNH
+@model  ThongTinThanhToanPagingViewModel
+
+
+<div class="tooltip-header-search">
+    <div class="col-sm-6" style="display:flex;padding-left:0px">
+        <label class="control-label">Đề nghị thanh toán (@Model._paging.TotalItems)</label>
+    </div>
+</div>
+<div class="row mt-10 mb-10">
+    <div class="col-sm-3 col-md-3 col-lg-3">
+
+    </div>
+    <div class="col-sm-9 col-md-9 col-lg-9"></div>
+    <button class="btn btn-primary pull-right mr-10" onclick="Insert()"><i class="fa fa-plus" aria-hidden="true"></i>Thêm mới</button>
+    <button class="btn btn-warning pull-right mr-10" onclick="ViewShowChoiceBaoCao()"><i class="fa fa-print" aria-hidden="true"></i>In báo cáo</button>
+    <button class="btn btn-info pull-right mr-10" onclick="ResetChangePage()"><i class="fa fa-refresh" aria-hidden="true"></i>Làm mới</button>
+</div>
+<div class="dDenghithanhtoan list-group">
+    <a href="#" class="list-group-item list-group-item-action" onclick="onModalBaoCao(1)">
+        Giấy đề nghị thanh toán (Chi ngoại tệ) - Theo QĐ435 BM03
+    </a>
+    <a href="#" class="list-group-item list-group-item-action" onclick="onModalBaoCao(2)">
+        Giấy đề nghị thanh toán (Chi trong nước) - Theo QĐ435 BM04
+    </a>
+    <a href="#" class="list-group-item list-group-item-action" onclick="onModalBaoCao(3)">
+        Thông báo chi ngân sách - Theo QĐ435 BM01
+    </a>
+    <a href="#" class="list-group-item list-group-item-action" onclick="onModalBaoCao(4)">
+        Thông báo cấp kinh phí bằng ngoại tệ - Theo QĐ435 BM05
+    </a>
+    <a href="#" class="list-group-item list-group-item-action" onclick="onModalBaoCao(5)">
+        Thông báo cấp kinh phí chi trong nước - Theo QĐ435 BM06
+    </a>
+</div>
+<table class="table table-bordered" id="tblListDeNghiThanhToan">
+    <thead class="header-search">
+        <tr>
+            <th width="2%"></th>
+            <th width="2%"></th>
+            <th width="10%">
+                @Html.DropDownList("iID_Ma", (SelectList)(ViewBag.lstNSDonVi), "--Chọn đơn vị--", new { @class = "form-control", @id = "idonvi", @onchange = "onChangeDonVi()" })
+            </th>
+            <th width="7%"><input placeholder="Số đề nghị" class="form-control gr_search ssodenghi" id="ssodenghi" title="Số đề nghị" /></th>
+            <th width="5%"><input placeholder="Ngày đề nghị" class="form-control gr_search sngaydenghi" id="sngaydenghi" title="Ngày đề nghị" /></th>
+            <th width="7%">
+                <select class="form-control gr_search iloaidenghi" id="iloaidenghi">
+                    <option value="">--Chọn loại nội dung--</option>
+                    <option value="1">Chi ngoại tệ</option>
+                    <option value="2">Chi trong nước</option>
+                </select>
+            </th>
+            <th width="7%">
+                @Html.DropDownList("ID", (SelectList)(ViewBag.lstChuDauTu), "--Chọn chủ đầu tư--", new { @class = "form-control", @id = "ichudautu" })
+            </th>
+            <th width="7%">
+                @Html.DropDownList("ID", (SelectList)(ViewBag.lstNhiemVuChi), "--Chọn nhiệm vụ chi--", new { @class = "form-control", @id = "itenchuongtrinh" })
+            </th>
+            <th width="5%">
+                <select class="form-control gr_search iloaidenghi" title="Chọn loại đề nghị">
+                    <option value="-">---Chọn loại đề nghị---</option>
+                    <option value="1">Thanh toán</option>
+                    <option value="2">Tạm ứng</option>
+                    <option value="3">Cấp kinh phí </option>>
+                </select>
+            </th>
+            <th width="5%">
+                <input type="number" id="inamkehoach" class="form-control" value="" maxlength="500" autocomplete="off" />
+            </th>
+            <th width="10%">
+                <select class="form-control gr_search inamngansach" id="inamngansach" title="Chọn năm ngân sách">
+                    <option value="">---Chọn năm ngân sách---</option>
+                    <option value="1">Năm nay</option>
+                    <option value="2">Năm trước chuyển sang</option>
+                </select>
+            </th>
+            <th width="10%">
+                <select class="form-control gr_search icoquanthanhtoan" id="icoquanthanhtoan" title="Chọn cơ quan thanh toán">
+                    <option value="">---Chọn cơ quan thanh toán---</option>
+                    <option value="1">CTC cấp </option>
+                    <option value="2">Đơn vị cấp</option>
+                </select>
+            </th>
+            <th width="10%">
+                @Html.DropDownList("Id", (SelectList)(ViewBag.lstDanhMucNhaThau), "--Chọn đơn vị hưởng thụ--", new { @class = "form-control", @id = "idonvihuongthu" })
+            </th>
+            <th width="10%">
+                <select class="form-control gr_search idtrangthai" id="idtrangthai" title="Chọn trạng thái">
+                    <option value="">---Chọn trạng thái---</option>
+                    <option value="1">Lưu nháp</option>
+                    <option value="2">Chưa được duyệt</option>
+                    <option value="3">Đã được duyệt</option>
+                </select>
+            </th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th width="10%" colspan="5"><button class="btn btn-info pull-right mr-10" onclick="ChangePage()"><i class="fa fa-search" aria-hidden="true"></i>Tìm kiếm</button></th>
+
+        </tr>
+    <thead>
+    <thead>
+        <tr>
+            <th rowspan="2"><input type="checkbox" class="checkbox-header" onclick="ChoiceAllCheckBox()"/></th>
+            <th rowspan="2">STT</th>
+            <th rowspan="2">Đơn vị</th>
+            <th rowspan="2">Số đề nghị</th>
+            <th rowspan="2">Ngày đề nghị</th>
+            <th rowspan="2">Loại nội dung</th>
+            <th rowspan="2">Chủ đầu tư</th>
+            <th rowspan="2">Tên chương trình</th>
+            <th rowspan="2">Loại đề nghị</th>
+            <th rowspan="2">Năm kế hoạch</th>
+            <th rowspan="2">Năm ngân sách</th>
+            <th rowspan="2">Cơ quan thanh toán</th>
+            <th rowspan="2">Đơn vị hưởng thụ</th>
+            <th rowspan="2">Trạng thái</th>
+            <th colspan="2">Số kinh phí đề nghị cấp kỳ này</th>
+            <th colspan="2">Số kinh phí nhận phê quyệt kỳ này</th>
+            <th width="20%" rowspan="2">Thao tác</th>
+        </tr>
+        <tr>
+            <th>USD</th>
+            <th>VND</th>
+            <th>USD</th>
+            <th>VND</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int index = 1;
+            foreach (var item in Model.Items)
+            {
+                <tr data-idthanhtoan="@item.ID">
+                    <td align="center"><input type="checkbox" class="checkbox" /></td>
+                    <td align="center">@index</td>
+                    <td align="left">@Html.Raw(item.sTen)</td>
+                    <td align="center">@item.sSoDeNghi</td>
+                    <td align="center"> @(item.dNgayDeNghi.HasValue ? item.dNgayDeNghi.Value.ToString("dd/MM/yyyy") : string.Empty)</td>
+                    @if (item.iLoaiNoiDungChi == 1)
+                    {
+                        <td align="center">Chi ngoại tệ</td>
+                    }
+                    else
+                    {
+                        <td align="center">Chi trong nước</td>
+                    }
+                    <td align="left">@item.sTenCDT</td>
+                    <td align="left">@item.sTenNhiemVuChi</td>
+                    @if (item.iLoaiDeNghi == 1)
+                    {
+                        <td align="center">Cấp kinh phí</td>
+                    }
+                    else if (item.iLoaiDeNghi == 2)
+                    {
+                        <td align="center">Thanh toán</td>
+                    }
+                    else
+                    {
+                        <td align="center">Tạm ứng</td>
+                    }
+                    <td align="center">@item.iNamKeHoach</td>
+                    @if (item.iNamNganSach == 1)
+                    {
+                        <td align="center">Năm nay</td>
+                    }
+                    else
+                    {
+                        <td align="center">Năm trước chuyển sang</td>
+                    }
+                    @if (item.iCoQuanThanhToan == 1)
+                    {
+                        <td align="center">CTC cấp</td>
+                    }
+                    else
+                    {
+                        <td align="center">Đơn vị cấp</td>
+                    }
+                    <td align="left">@item.sTenNhaThau</td>
+                    @if (item.iTrangThai == 1)
+                    {
+                        <td align="center">Lưu nháp</td>
+                    }
+                    else if (item.iTrangThai == 2)
+                    {
+                        <td align="center">Chưa được duyệt</td>
+                    }
+                    else
+                    {
+                        <td align="center">Đã được duyệt</td>
+                    }
+
+                    <td align="right" class="ftongdenghiusd"> @(item.sTongCTDeNghiCapKyNay_USD)</td>
+                    <td align="right" class="ftongdenghivnd"> @(item.fTongCTDeNghiCapKyNay_VND.HasValue ? item.fTongCTDeNghiCapKyNay_VND.Value.ToString("###,###") : string.Empty)</td>
+                    <td align="right" class="ftongpheduyetusd"> @(item.sTongCtPheDuyetCapKyNay_USD)</td>
+                    <td align="right" class="ftongpheduyetusd"> @(item.fTongCTPheDuyetCapKyNay_VND.HasValue ? item.fTongCTPheDuyetCapKyNay_VND.Value.ToString("###,###") : string.Empty)</td>
+                    <td>
+                        @if (item.iTrangThai == 1 || item.iTrangThai == 2)
+                        {
+                            <button type="button" class="btn-detail" onclick="Detail('@item.ID')"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></button>
+                            <button type="button" class="btn-edit" onclick="Update('@item.ID')"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></button>
+                            <button type="button" class="btn-delete" onclick="onModalThongBaoXoa('@item.ID')"><i class="fa fa-trash-o fa-lg" aria-hidden="true"></i></button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn-detail" onclick="Detail('@item.ID')"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></button>
+                        }
+
+                    </td>
+                </tr>
+                index++;
+
+            }
+        }
+
+    </tbody>
+    <tfoot></tfoot>
+</table>
+
+@Html.BuildPagingButtons(Model._paging)

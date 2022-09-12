@@ -1,0 +1,235 @@
+﻿@using Viettel.Models.QLNH
+@model BaoCaoTaiSanModelViewModel
+
+@{
+    int pageIndex = (Model._paging.CurrentPage - 1) * Model._paging.ItemsPerPage;
+}
+
+<style>
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 40px;
+        background-color: #f9f9f9;
+        min-width: 120px;
+        height: 40px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+    .main .btn:not(.btn-icon) {
+        width: 120px !important;
+        height: 40px !important;
+        line-height: 19px !important;
+        color: white !important;
+    }
+
+    .dropdown-content button {
+        color: black;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #ff6002
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .dropbtn {
+        background-color: #ff6002;
+    }
+</style>
+
+<div class="tooltip-header-search">
+    <div class="col-sm-6" style="display:flex;padding-left:0px;">
+        <label class="control-label">Báo cáo tài sản hình thành theo hợp đồng dự án (@Model._paging.TotalItems)</label>
+    </div>
+
+    <div class="col-sm-6">
+        <button class="btn btn-info pull-right" style="margin-right:10px;"><i class="fa fa-refresh" aria-hidden="true"></i>Export</button>
+        <button class="btn btn-info pull-right" style="margin-right:10px;" onclick="ResetChangePage()"><i class="fa fa-refresh" aria-hidden="true"></i>Làm mới</button>
+        <div class="dropdown pull-right mr-10">
+            <button class="dropbtn btn btn-warning" style="height: 41px !important "><i class="fa fa-print" aria-hidden="true"></i>Tìm kiếm</button>
+            <div class="dropdown-content">
+                <button class="btn btn-warning" style="height: 40px !important; width:120px !important" onclick="ChooseTable(true)">Danh sách tài sản</button>
+                <button class="btn btn-warning" style="height: 40px !important; width:120px !important" onclick="ChooseTable(false)">Thống kê tài sản</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div>
+    <table class="table table-bordered " id="" >
+        <thead class="header-search">
+            <tr>
+                <th width="3%"></th>
+                <th width="8%">
+                    <select id="slbDonViFilter" name="slbDonViFilter" class="form-control" onchange="ChangePage()">
+                        @if (Model.ListDonVi != null && Model.ListDonVi.Count > 0)
+                        {
+                            foreach (var donvi in Model.ListDonVi)
+                            {
+                                <option value="@donvi.iID_Ma" data-madonvi="@donvi.iID_Ma">@Html.Raw(donvi.sDonVi)</option>
+                            }
+                        }
+                    </select>
+                </th>
+                <th width="8%">
+                    <select id="slbDuAnFilter" name="slbDuAnFilter" class="form-control" onchange="ChangePage()">
+                        @if (Model.ListDuAn != null && Model.ListDuAn.Count > 0)
+                        {
+                            foreach (var donvi in Model.ListDuAn)
+                            {
+                                <option value="@donvi.ID" data-madonvi="@donvi.ID">@Html.Raw(donvi.sTenDuAn)</option>
+                            }
+                        }
+                    </select>
+                </th>
+                <th width="8%">
+                    <select id="slbDopDongFilter" name="slbDopDongFilter" class="form-control" onchange="ChangePage()">
+                        @if (Model.ListHopDong != null && Model.ListHopDong.Count > 0)
+                        {
+                            foreach (var donvi in Model.ListHopDong)
+                            {
+                                <option value="@donvi.ID" data-madonvi="@donvi.ID">@Html.Raw(donvi.sTenHopDong)</option>
+                            }
+                        }
+                    </select>
+                </th>
+                <th width="70%"></th>
+            </tr>
+        </thead>
+        </table>
+        <table class="table table-bordered" id="tbListBaoCaoTaiSan1" >
+            <thead>
+            <th width="3%">STT</th>
+            <th width="8%">Đơn vị sử dụng</th>
+            <th width="8%">Thuộc dự án</th>
+            <th width="8%">Thuộc hợp đồng</th>
+            <th width="8%">Mã tài sản</th>
+            <th width="9%">Tên tài sản</th>
+            <th width="8%">Loại tài sản</th>
+            <th width="8%">Ngày bắt đầu sử dụng</th>
+            <th width="8%">Trạng thái sử dụng</th>
+            <th width="8%">Tình trạng sử dụng</th>
+            <th width="8%">Số lượng</th>
+            <th width="8%">Đơn vị tính</th>
+            <th width="8%">Nguyên giá</th>
+            </thead>
+            <tbody>
+                @{
+                    int index = 0;
+                    foreach (var item in Model.Items)
+                    {
+                        index++;
+                        <tr style="cursor: pointer">
+                            <td align="center">@(pageIndex + index)</td>
+                            <td align="center">@Html.Raw(item.sDonVi)</td>
+                            <td align="center">@Html.Raw(item.sDuAn)</td>
+                            <td align="center">@Html.Raw(item.sHopDong)</td>
+                            <td align="center">@Html.Raw(item.sMaTaiSan)</td>
+                            <td align="center">@Html.Raw(item.sTenTaiSan)</td>
+                            <td align="center">@Html.Raw(item.iLoaiTaiSan == 1 ? "Hữu hình" : "Vô hình")</td>
+                            <td align="center">@Html.Raw(item.dNgayBatDauSuDung)</td>
+                            <td align="center">@Html.Raw(item.iTrangThai == 1 ? "Chưa sử dụng" : item.iTrangThai == 2 ? "Đang sử dụng" : " Không sử dụng")</td>
+                            <td align="center">@Html.Raw(item.iTinhTrangSuDung == 1 ? "Mới" : item.iTrangThai == 2 ? " Cũ" : "Hết giá trị")</td>
+                            <td align="center">@Html.Raw(item.fSoLuong)</td>
+                            <td align="center">@Html.Raw(item.sDonViTinh)</td> 
+                            <td align="center">@Html.Raw(item.fNguyenGia)</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+</div>
+
+
+<div>
+    <table class="table table-bordered" id="tbListBaoCaoTaiSan2" >
+       
+        <thead>
+        <th width="3%" rowspan="2">STT</th>
+        <th width="8%" rowspan="2">Đơn vị sử dụng</th>
+        <th width="8%" rowspan="2">Thuộc dự án</th>
+        <th width="8%" rowspan="2">Thuộc hợp đồng</th>
+        <th width="8%" rowspan="2">Mã tài sản</th>
+        <th width="9%" rowspan="2">Tên tài sản</th>
+        <th width="8%" colspan="2">Loại tài sản</th>
+        <th width="8%" colspan="3">Trạng thái sử dụng</th>
+        <th width="8%" colspan="3">Tình trạng sử dụng</th>
+        <tr>
+            <th width="7%">Tài sản hữu hình</th>
+            <th width="7%">Tài sản vô hình</th>
+            <th width="7%">Chưa sử dụng</th>
+            <th width="7%">Đang sử dụng</th>
+            <th width="7%">Không sử dụng</th>
+            <th width="7%">Mới</th>
+            <th width="7%">Cũ</th>
+            <th width="7%">Hết giá trị</th>
+        </tr>
+        </thead>
+        <tbody>
+            @{
+                int indexx = 0;
+                foreach (var item in Model.Items2)
+                {
+                    indexx++;
+                    <tr style="cursor: pointer">
+                        <td align="center">@(pageIndex + indexx)</td>
+                        <td align="center">@Html.Raw(item.sDonVi)</td>
+                        <td align="center">@Html.Raw(item.sDuAn)</td>
+                        <td align="center">@Html.Raw(item.sHopDong)</td>
+                        <td align="center">@Html.Raw(item.sMaTaiSan)</td>
+                        <td align="center">@Html.Raw(item.sTenTaiSan)</td>
+                        <td align="center">@Html.Raw(item.slHH)</td>
+                        <td align="center">@Html.Raw(item.slVH)</td>
+                        <td align="center">@Html.Raw(item.slChua)</td>
+                        <td align="center">@Html.Raw(item.slDang)</td>
+                        <td align="center">@Html.Raw(item.slKhong)</td>
+                        <td align="center">@Html.Raw(item.slMoi)</td>
+                        <td align="center">@Html.Raw(item.slCu)</td>
+                        <td align="center">@Html.Raw(item.slHet)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@Html.BuildPagingButtons(Model._paging)
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.date')
+            .datepicker({
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: 'vi',
+                todayHighlight: true,
+            });
+        $("tr").hover(function () {
+            $(this).css("background-color", "#e7f8fe");
+        }, function () {
+            $(this).css("background-color", "");
+        });
+        $("#tbListBaoCaoTaiSan .gr_search").each(function (index, value) {
+            $(this).keypress(function (e) {
+                if (e.which == 13) {
+                    ChangePage();
+                }
+            });
+        });
+    });
+</script>
+
+

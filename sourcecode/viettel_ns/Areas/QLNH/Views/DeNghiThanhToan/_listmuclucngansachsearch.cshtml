@@ -1,0 +1,74 @@
+﻿@using Viettel.Models.QLNH
+@model  MucLucNganSachPagingViewModel
+@{
+    int pageIndex = (Model._paging.CurrentPage - 1) * Model._paging.ItemsPerPage;
+}
+
+<div class="modal-dialog" role="document" style="width:60%">
+    <div class="modal-content mr-10" id="listmucngansach">
+        <div class="modal-header">
+            <h4 class="modal-title text-bold text-left" id="modalDeNghiThanhToanLabel">DANH SÁCH MỤC LỤC NGÂN SÁCH</h4>
+        </div>
+        <div class="contentmuclucngansach" id="lstDataViewNganSach">
+            <div class="tooltip-header-search">
+                <div class="col-sm-8">
+
+                </div>
+            </div>
+            <div class="contentngansach mr-10 ml-10">
+                <table class="table table-bordered" id="tblListMucLucNganSach">
+                    <thead>
+                        <tr>
+                            <th>LNS</th>
+                            <th>L</th>
+                            <th>K</th>
+                            <th>M</th>
+                            <th>TM</th>
+                            <th>TTM</th>
+                            <th>NG</th>
+                            <th>TNG</th>
+                            <th>Nội dung</th>
+                            <th>Chương</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            foreach (var item in Model.Items)
+                            {
+                                string value_item = @item.sL + '-' + @item.sK + '-' + @item.sM + '-' + @item.sTM + '-' + @item.sTTM + '-' + @item.sNG + '-' + @item.sTNG;
+                                <tr ondblclick="ChonMucLucNganSach(this)">
+                                    <td data-dong="@value_item" data-idmuclucngansach="@item.iID_MaMucLucNganSach" >@item.sLNS</td>
+                                    <td>@item.sL</td>
+                                    <td>@item.sK</td>
+                                    <td>@item.sM</td>
+                                    <td>@item.sTM</td>
+                                    <td>@item.sTTM</td>
+                                    <td>@item.sNG</td>
+                                    <td>@item.sTNG</td>
+                                    <td>@item.sMoTa</td>
+                                    <td>@item.sChuong</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="modal-footer"> @Html.BuildPagingButtons(Model._paging)</div>
+        <div class="form-group text-center">
+            <button class="btn btn-default" id="btnVoucherCancel" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i><span>Đóng</span></button>
+        </div>
+    </div>
+  
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+          _paging.CurrentPage = @Model._paging.CurrentPage ;
+          _paging.ItemsPerPage = @Model._paging.ItemsPerPage;
+    })
+</script>

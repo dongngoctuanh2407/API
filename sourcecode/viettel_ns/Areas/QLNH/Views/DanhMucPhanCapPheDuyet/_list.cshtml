@@ -1,0 +1,91 @@
+﻿@using Viettel.Models.QLNH
+@model DanhmucNgoaiHoi_PhanCapPheDuyetModelPaging
+
+@{
+    int pageIndex = (Model._paging.CurrentPage - 1) * Model._paging.ItemsPerPage;
+}
+<div class="tooltip-header-search">
+    <div class="col-sm-8" style="display:flex;padding-left:0px;">
+        <label class="control-label">Danh mục phân cấp phê duyệt (@Model._paging.TotalItems)</label>
+    </div>
+    <button class="btn btn-primary pull-right" style="margin-right:10px;" onclick="OpenModal()" data-toggle="modal" data-target="#modalPhanCapPheDuyet"><i class="fa fa-plus" aria-hidden="true"></i>Thêm mới</button>
+    <button class="btn btn-info pull-right" style="margin-right:10px;" onclick="ResetChangePage()"><i class="fa fa-refresh" aria-hidden="true"></i>Làm mới</button>
+</div>
+<table class="table table-bordered" id="tbListTiGia">
+    <thead class="header-search">
+    <th width="3%"></th>
+    <th width="15%"><input type="text" class="form-control gr_search" id="txtMa" placeholder="Mã loại hợp đồng" /></th>
+    <th width="15%"><input type="text" class="form-control gr_search" id="txtTenVietTat" placeholder="Tên viết tắt"/></th>
+
+    <th width="25%"><input type="text" class="form-control gr_search" id="txtTen" placeholder="Tên loại hợp đồng"/></th>
+    <th width="25%"><input type="text" class="form-control gr_search" id="txtMoTa" placeholder="Mô tả" /></th>
+    <th width="15%"><button class="btn btn-info" onclick="ChangePage()"><i class="fa fa-search" aria-hidden="true"></i>Tìm kiếm</button></th>
+    </thead>
+    <thead>
+    <th width="3%">STT</th>
+    <th width="15%">Mã phân cấp phê duyệt</th>
+    <th width="15%">Tên viết tắt</th>
+    <th width="25%">Tên phân cấp phê duyệt</th>
+    <th width="25%">Mô tả</th>
+    <th width="10%">Thao tác</th>
+    </thead>
+    <tbody>
+        @{
+            int index = 0;
+            foreach (var item in Model.Items)
+            {
+                index++;
+                <tr style="cursor: pointer">
+                    <td align="center">@(pageIndex + index)</td>
+
+                    <td align="center">@item.sMa</td>
+
+                    <td align="center">@item.sTenVietTat</td>
+
+                    <td align="center">@item.sTen</td>
+
+                    <td align="left">@item.sMoTa</td>
+                    <td align="center" style="vertical-align: middle !important" class="col-sm-12">
+                        <button type="button" class="btn-detail" onclick="OpenModalDetail('@item.ID')" data-toggle="modal" data-target="#modalPhanCapPheDuyet"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></button>
+                        <button type="button" class="btn-edit" onclick="OpenModal('@item.ID')" data-toggle="modal" data-target="#modalPhanCapPheDuyet"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></button>
+                        <button type="button" class="btn-delete" onclick="Delete('@item.ID')" data-toggle="modal" data-target="#modalPhanCapPheDuyet"><i class="fa fa-trash-o fa-lg" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@Html.BuildPagingButtons(Model._paging)
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.date')
+            .datepicker({
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: 'vi',
+                todayHighlight: true,
+            });
+        $("tr").hover(function () {
+            $(this).css("background-color", "#e7f8fe");
+        }, function () {
+            $(this).css("background-color", "");
+        });
+
+        $("#tbListPhanCapPheDuyet .gr_search").each(function (index, value) {
+            $(this).keypress(function (e) {
+                if (e.which == 13) {//Enter key pressed
+                    ChangePage();
+                }
+            });
+        });
+        /*formatMoney();*/
+    });
+</script>
+
+
+

@@ -1,0 +1,315 @@
+﻿@using Viettel.Models.QLNH
+@model ThongTinThanhToanDetaiModel
+@{
+    ViewBag.Title = "Chi tiết đề nghị thanh toán";
+    Layout = "~/Views/Shared/_LayoutWebNew.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/css/DanhMuc/style.css">
+<div class="main">
+    <div class="panel-list-item col-sm-12">
+        <div class="card">
+            <div class="card-body create_dntt">
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <h4 class="color-text-red">Thông tin chung</h4>
+                        <hr class='color-background-red' />
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="drpDonViQuanLy" class="">Đơn vị <span class="require">*</span> </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sTen)</p>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtngaydenghi">Ngày đề nghị</label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.dNgayDeNghi.HasValue ? Model.thongtinthanhtoan.dNgayDeNghi.Value.ToString("dd/MM/yyyy") : String.Empty)</p>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtsodenghi">Số đề nghị <span class="require">*</span> </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sSoDeNghi)</p>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpLoaiNoiDung" class=""> Loại nội dung <span class="require">*</span></label>
+                                @{
+                                    if (Model.thongtinthanhtoan.iLoaiNoiDungChi == 1)
+                                    {
+                                        <p>Chi ngoại tệ</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Chi trong nước</p>
+                                    }
+                                }
+
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpTenChuongTrinh" class="">Tên chương trình <span class="require">*</span></label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sTenNhiemVuChi)</p>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpChuDauTu" class=""> Chủ đầu tư <span class="require">*</span></label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sTenCDT)</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="drpThanhToanTheo" class=""> Thanh toán theo </label>
+                                @{
+                                    if (Model.thongtinthanhtoan.iThanhToanTheo == 1)
+                                    {
+                                        <p>Nội dung chi theo hợp đồng</p>
+                                    }
+                                    else if (Model.thongtinthanhtoan.iThanhToanTheo == 2)
+                                    {
+                                        <p>Nội dung chi theo dự án, không hình thành hợp đồng</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Nội dung chi không theo dự án, không hình thành hợp đồng</p>
+                                    }
+                                }
+                            </div>
+                            @{
+                                if (Model.thongtinthanhtoan.iThanhToanTheo == 1)
+                                {
+                                    <div class="col-sm-2" id="dhopdong">
+                                        <label for="drpTenHopDong" class=""> Tên hợp đồng </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sTenHopDong)</p>
+
+                                    </div>
+                                    <div class="col-sm-2" id="dcancu">
+                                        <label for="txtCanCu" class=""> Căn cứ </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sCanCu)</p>
+                                    </div>
+                                    <div class="col-sm-2" id="dhodongusd">
+                                        <label for="txtGiaTriHDUSD" class=""> Giá trị hợp đồng được duyệt(USD) </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sHopDongPheDuyet_USD)</p>
+
+                                    </div>
+                                    <div class="col-sm-2" id="dhodongvnd">
+                                        <label for="txtGiaTriHDVND" class=""> Giá trị hợp đồng được duyệt(VND) </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sHopDongPheDuyet_VND)</p>
+
+
+                                    </div>
+
+                                }
+                                else if (Model.thongtinthanhtoan.iThanhToanTheo == 2)
+                                {
+                                    <div class="col-sm-2" id="dduan">
+                                        <label for="drpTenDuAn" class=""> Tên dự án </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sTenDuAn)</p>
+
+                                    </div>
+                                    <div class="col-sm-2" id="dcancu">
+                                        <label for="txtCanCu" class=""> Căn cứ </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sCanCu)</p>
+                                    </div>
+                                    <div class="col-sm-2" id="ddutoanusd">
+                                        <label for="txtGiaTriDDUSD" class=""> Giá trị dự toán được duyệt(USD) </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sDuToanPheDuyet_USD)</p>
+
+                                    </div>
+                                    <div class="col-sm-2" id="ddutoanvnd">
+                                        <label for="txtGiaTriDDVND" class=""> Giá trị dự toán được duyệt(VND) </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sDuToanPheDuyet_VND)</p>
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-sm-2" id="dcancu">
+                                        <label for="txtCanCu" class=""> Căn cứ </label>
+                                        <p>@Html.Raw(Model.thongtinthanhtoan.sCanCu)</p>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="txtLyKeKinhPhiUSD" class="">Lũy kế kinh phí được cấp, thanh toán đến cuối kỳ trước (USD) </label>
+                                <p>@Html.Raw(ViewBag.sLuyKeUSD)</p>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtLyKeKinhPhiVND" class="">Lũy kế kinh phí được cấp, thanh toán đến cuối kỳ trước (VND) </label>
+                                <p>@Html.Raw(ViewBag.sLuyKeVND)</p>
+
+                            </div>
+                            <div class="col-sm-2" style="margin-top:20px">
+                                <label for="drpLoaiDeNghi" class=""> Loại đề nghị </label>
+                                @{
+                                    if (Model.thongtinthanhtoan.iLoaiDeNghi == 1)
+                                    {
+                                        <p>Cấp kinh phí</p>
+                                    }
+                                    else if (Model.thongtinthanhtoan.iLoaiDeNghi == 2)
+                                    {
+                                        <p>Thanh toán</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Tạm ứng</p>
+                                    }
+                                }
+
+                            </div>
+                            <div class="col-sm-2" style="margin-top:20px">
+                                <label for="drpNamKeHoach" class=""> Năm kế hoạch </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.iNamKeHoach)</p>
+
+                            </div>
+                            <div class="col-sm-2" style="margin-top:20px">
+                                <label for="drpNamNganSach" class=""> Năm ngân sách </label>
+                                @{
+                                    if (Model.thongtinthanhtoan.iNamNganSach == 1)
+                                    {
+                                        <p>Năm nay</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Năm trước chuyển sang</p>
+                                    }
+                                }
+
+                            </div>
+                            <div class="col-sm-2" style="margin-top:20px">
+                                <label for="drpCoQuanThanhToan" class=""> Cơ quan thanh toán </label>
+                                @{
+                                    if (Model.thongtinthanhtoan.iCoQuanThanhToan == 1)
+                                    {
+                                        <p>CTC cấp</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Đơn vị cấp</p>
+                                    }
+                                }
+
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="drpTyGiaDeNghi" class=""> Tỉ giá đề nghị </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sTiGiaDeNghi)</p>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpTyGiaPheDuyet" class=""> Tỉ giá phê duyệt </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sTiGiaPheDuyet)</p>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpTrangThai" class=""> Trạng thái </label>
+                                @{
+                                    if (Model.thongtinthanhtoan.iTrangThai == 1)
+                                    {
+                                        <p>Lưu nháp</p>
+                                    }
+                                    else if (Model.thongtinthanhtoan.iTrangThai == 2)
+                                    {
+                                        <p>Chưa được duyệt</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Đã được duyệt</p>
+                                    }
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <h4 class="color-text-red">Thông tin thanh toán</h4>
+                        <hr class='color-background-red' />
+                        <table class="table table-bordered scrolldown" id="tblListTTThanhToan">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" width="20%">Mục lục ngân sách</th>
+                                    <th rowspan="2" width="20%">Nội dung chi</th>
+                                    <th width="30%" colspan="2">Số kinh phí đề nghị thanh toán kỳ này</th>
+                                    <th width="30%" colspan="2">Số kinh phí chấp nhận phê duyệt thanh toán kỳ này</th>
+
+                                </tr>
+                                <tr>
+                                    <th width="15%">USD</th>
+                                    <th width="15%">VND</th>
+                                    <th width="15%">USD</th>
+                                    <th width="15%">VND</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.thanhtoan_chitiet)
+                                {
+                                    <tr>
+                                        <td class="center">@Html.Raw(item.sMucLucNganSach)</td>
+                                        <td>@Html.Raw(item.sTenNoiDungChi)</td>
+                                        <td align="right">@Html.Raw(item.sDeNghiCapKyNay_USD)</td>
+                                        <td align="right">@Html.Raw(item.fDeNghiCapKyNay_VND.HasValue ? item.fDeNghiCapKyNay_VND.Value.ToString("###, ###") : String.Empty)</td>
+                                        <td align="right">@Html.Raw(item.sPheDuyetCapKyNay_USD)</td>
+                                        <td align="right">@Html.Raw(item.fPheDuyetCapKyNay_VND.HasValue ? item.fPheDuyetCapKyNay_VND.Value.ToString("###,###") : String.Empty)</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="text-bold text-center" colspan="2"> Tổng cộng</th>
+                                    <th class="text-bold text-center">@Html.Raw(ViewBag.sTongDeNghi_USD)</th>
+                                    <th class="text-bold text-center">@Html.Raw(Model.thongtinthanhtoan.fTongCTDeNghiCapKyNay_VND.HasValue ? Model.thongtinthanhtoan.fTongCTDeNghiCapKyNay_VND.Value.ToString("###,###") : String.Empty)</th>
+                                    <th class="text-bold text-center">@Html.Raw(ViewBag.sTongPheDuyet_USD)</th>
+                                    <th class="text-bold text-center">@Html.Raw(Model.thongtinthanhtoan.fTongCTPheDuyetCapKyNay_VND.HasValue ? Model.thongtinthanhtoan.fTongCTPheDuyetCapKyNay_VND.Value.ToString("###,###") : String.Empty)</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <h4 class="color-text-red">Thông tin đơn vị hưởng thụ</h4>
+                        <hr class='color-background-red' />
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="drpTenDonViHuongThu" class=""> Tên đơn vị hưởng thụ </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sTenNhaThau)</p>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtChuyenKhoanSo" class="">Chuyển khoản (bằng số) </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.fChuyenKhoan_BangSo.HasValue ? Model.thongtinthanhtoan.fChuyenKhoan_BangSo.Value.ToString("###,###") : String.Empty)</p>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtBangChu" class="">Bằng chữ </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sChuyenKhoan_BangChu)</p>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtSoTaiKhoan" class=""> Số tài khoản </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sSoTaiKhoan)</p>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtTai" class=""> Tại </label>
+                                <p>@Html.Raw(Model.thongtinthanhtoan.sNganHang)</p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="form-group text-center">
+    <button class="btn btn-back" onclick="CancelSaveData()" style="color:white"><i class="fa fa-arrow-left" aria-hidden="true"></i><span>Quay lại</span></button>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/QLNH/DanhMucNgoaiHoi/jsDeNghiThanhToanInsert.js"></script>
+}

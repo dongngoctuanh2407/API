@@ -1,0 +1,49 @@
+﻿@model  Viettel.Models.QLNH.BaoCaoTHTHDuAn.BaoCaoTinhHinhModel
+@{
+    ViewBag.Title = "Danh mục báo cáo tình hình thực hiện dự án";
+    Layout = "~/Views/Shared/_LayoutWebNew.cshtml";
+}
+
+
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/Content/css/DanhMuc/style.css">
+}
+
+<div class="main">
+    <div class="panel-list-item col-sm-12">
+        <div class="card">
+            <div class="card-body" id="lstDataView">
+                @Html.Partial("_list", Model)
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalTaiSan" tabindex="-1" role="dialog" aria-labelledby="modalTaiSanLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="width:60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-bold text-left" id="modalTaiSanLabel"></h3>
+            </div>
+            <div id="contentModalTaiSan">
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modal confirm *@
+<div id="divModalConfirm">
+
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/QLNH/DuAnHopDong/BaoCaoTinhHinhThucHienDuAn/jsBaoCaoTinhHinhThucHienDuAn.js"></script>
+    <script>
+        var _paging = {};
+        $(document).ready(function () {
+            _paging.CurrentPage = @Model.ListChiTiet._paging.CurrentPage ;
+            _paging.ItemsPerPage = @Model.ListChiTiet._paging.ItemsPerPage ;
+        });
+    </script>
+}

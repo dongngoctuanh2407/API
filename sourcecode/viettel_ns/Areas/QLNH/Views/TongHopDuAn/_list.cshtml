@@ -1,0 +1,176 @@
+﻿@using Viettel.Models.QLNH
+@using DomainModel
+@using Viettel.Domain.DomainModel
+@using System.Globalization;
+@model NHDAThongTinDuAnViewModel
+
+@{
+    int pageIndex = (Model._paging.CurrentPage - 1) * Model._paging.ItemsPerPage;
+}
+<div class="tooltip-header-search">
+    <div class="col-sm-8" style="display:flex;padding-left:0px;">
+        <label class="control-label">Thông Tin Dự án (@Model._paging.TotalItems)</label>
+    </div>
+    <button class="btn btn-info pull-right" style="margin-right:10px;" onclick="ResetChangePage()"><i class="fa fa-refresh" aria-hidden="true"></i>Làm mới</button>
+    <button class="btn btn-info pull-right btn-print" style="margin-right:10px;" data-ext="xls" ><i class="fa fa-print" aria-hidden="true"></i>Export</button>
+</div>
+<table border="1" cellpadding="0" cellspacing="0" class="table table-bordered" id="tblThongTinDuAnList">
+    <thead class="header-search">
+        <tr>
+            <th width="3%"></th>
+            <th width="12%">
+                <select id="slbBQuanLyFilter" name="slbBQuanLyFilter" class="form-control">
+                    @if (Model.ListPhongBan != null && Model.ListPhongBan.Count > 0)
+                    {
+                        foreach (var donvi in Model.ListPhongBan)
+                        {
+                            <option value="@donvi.iID_MaPhongBan" data-madonvi="@donvi.iID_MaPhongBan">@Html.Raw(donvi.sTen)</option>
+                        }
+                    }
+                </select>
+            </th>
+            <th width="12%">
+                <select id="slbsDonViFilter" name="slbsDonViFilter" class="form-control">
+                    @if (Model.ListDonVi != null && Model.ListDonVi.Count > 0)
+                    {
+                        foreach (var donvi in Model.ListDonVi)
+                        {
+                            <option value="@donvi.iID_Ma" data-madonvi="@donvi.iID_MaDonVi">@Html.Raw(donvi.sTen)</option>
+                        }
+                    }
+
+
+                </select>
+            </th>
+            <!--<th width="9%">-->
+            @*<select id="slbChuDauTuFilter" name="slbChuDauTuFilter" class="form-control">
+            @if (Model.ListChuDauTu != null && Model.ListChuDauTu.Count > 0)
+            {
+                foreach (var donvi in Model.ListChuDauTu)
+                {
+                    <option value="@donvi.ID" data-madonvi="@donvi.sId_CDT">@Html.Raw(donvi.sTenCDT)</option>
+                }
+            }
+            </select>*@
+
+            <!--</th>
+            <th width="9%">-->
+                    @*<select id="slbPhanCapPheDuyetFilter" name="slbPhanCapPheDuyetFilter" class="form-control">
+                    @if (Model.ListDanhMucPCPD != null && Model.ListDanhMucPCPD.Count > 0)
+                    {
+                        foreach (var donvi in Model.ListDanhMucPCPD)
+                        {
+                            <option value="@donvi.ID" data-madonvi="@donvi.ID">@Html.Raw(donvi.sTen)</option>
+                        }
+                    }
+                </select>*@
+
+                    <!--</th>
+            <th width="8%"></th>
+            <th width="9%"></th>
+            <th width="8%"></th>
+            <th width="9%"></th>
+            <th width="9%"></th>
+            <th width="9%"></th>-->
+            <th width="70%" colspan="7"></th>
+            <th width="9%"><button style=" float : right" class="btn btn-info" onclick="ChangePage()"><i class="fa fa-search" aria-hidden="true"></i>Tìm kiếm</button></th>
+        </tr>
+
+    </thead>
+    <thead>
+        <tr>
+            <th rowspan="2">STT</th>
+            <th rowspan="2">B Quản lý</th>
+            <th width="8%" rowspan="2">Dự án - Đơn vị</th>
+            <th colspan="2">Chủ trương đầu tư</th>
+            <th colspan="2">Quyết định đầu tư</th>
+            <th colspan="4">Tổng mục đầu tư phê duyệt</th>
+        </tr>
+        <tr>
+            <th width="9%">Số quyết định</th>
+            <th width="8%">Ngày quyết định</th>
+            <th width="9%">Số quyết định</th>
+            <th width="8%">Ngày quyết định</th>
+            <th width="9%">USD</th>
+            <th width="9%">VND</th>
+            <th width="9%">EUR</th>
+            <th width="9%">Ngoại tệ khác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if (Model.Items != null)
+            {
+
+                int index = 0;
+                foreach (var item in Model.Items)
+                {
+                    index++;
+                <tr>
+                    <td align="center">@(pageIndex + index)</td>
+                    <td align="center">@Html.Raw(item.sBQuanLy)</td>
+                    <td align="center">@Html.Raw(item.sTenDuAn) - @Html.Raw(item.sDonVi)</td>
+                    <td align="center">@Html.Raw(item.sSoChuTruongDauTu)</td>
+                    <td align="center">@Html.Raw(item.dNgayChuTruongDauTu.HasValue ? item.dNgayChuTruongDauTu.Value.ToString("dd/MM/yyyy") : string.Empty)</td>
+                    <td align="center">@Html.Raw(item.sSoQuyetDinhDauTu)</td>
+                    <td align="center">@Html.Raw(item.dNgayQuyetDinhDauTu.HasValue ? item.dNgayQuyetDinhDauTu.Value.ToString("dd/MM/yyyy") : string.Empty)</td>
+                    <td align="right">@Html.Raw(item.fGiaTriUSD.HasValue ? CommonFunction.DinhDangSo(item.fGiaTriUSD.Value.ToString(CultureInfo.InvariantCulture), 2) : string.Empty)</td>
+                    <td align="right">@Html.Raw(item.fGiaTriVND.HasValue ? CommonFunction.DinhDangSo(Math.Round(item.fGiaTriVND.Value).ToString(CultureInfo.InvariantCulture), 0) : string.Empty)</td>
+                    <td align="right">@Html.Raw(item.fGiaTriEUR.HasValue ? CommonFunction.DinhDangSo(item.fGiaTriEUR.Value.ToString(CultureInfo.InvariantCulture), 2) : string.Empty)</td>
+                    <td align="right">@Html.Raw(item.fGiaTriNgoaiTeKhac.HasValue ? CommonFunction.DinhDangSo(item.fGiaTriNgoaiTeKhac.Value.ToString(CultureInfo.InvariantCulture), 2) : string.Empty)</td>
+                </tr>
+                    }
+                }
+            }
+    </tbody>
+</table>
+<input type="hidden" id="urlExport" value="@Url.Action("ExportExcelBaoCao")" />
+@Html.BuildPagingButtons(Model._paging)
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.date')
+            .datepicker({
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: 'vi',
+                todayHighlight: true,
+            });
+        $("tr").hover(function () {
+            $(this).css("background-color", "#e7f8fe");
+        }, function () {
+            $(this).css("background-color", "");
+        });
+
+        $("#tbListThongTinDuAn .gr_search").each(function (index, value) {
+            $(this).keypress(function (e) {
+                if (e.which == 13) {//Enter key pressed
+                    ChangePage();
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $(".btn-print").click(function () {
+        var links = [];
+        var ext = $(this).data("ext");
+        //var dvt = $("#dvt").val();
+        debugger;
+        var url = $("#urlExport").val() +
+            "?ext=" + ext +
+            "&dvt=1000";
+
+        url = unescape(url);
+        links.push(url);
+
+        openLinks(links);
+    });
+</script>
+
+
+

@@ -1,0 +1,101 @@
+﻿@using Viettel.Domain.DomainModel
+@using Viettel.Models.QLNH.QuyetToan
+@model NH_QT_QuyetToanDAHT
+
+<div class="modal-body">
+    <input type="hidden" id="hidQTDuAnID" value="@Model.ID" />
+    <div class="chao-banner1">
+        <label>Thông tin chung:</label>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-4">
+            <label for="">Số đề nghị</label>
+            @Helpers.Required()
+            <div>
+                <input type="text" required id="txtSoDeNghi" class="form-control" value="@Html.Raw(Model.sSoDeNghi)" maxlength="100" autocomplete="off" />
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <label for="txtNgayDeNghi">Ngày đề nghị</label>
+            <div class='input-group date'>
+                <input type='text' class="form-control" value="@(Model.dNgayDeNghi.HasValue ? Model.dNgayDeNghi.Value.ToString("dd/MM/yyyy") : string.Empty)" id="txtNgayDeNghi" autocomplete="off" />
+                <span class="btn-default input-group-addon">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                </span>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <label for="slbDonVi">Đơn vị</label>
+            @Helpers.Required()
+            <select id="slbDonVi" name="slbDonVi" class="form-control" @(Model.ID != Guid.Empty ? "disabled" : string.Empty) required >
+                @if (ViewBag.ListDonVi != null)
+                {
+                    foreach (var donvi in (List<NS_DonVi>)ViewBag.ListDonVi)
+                    {
+                        <option value="@donvi.iID_Ma" @(Model.iID_DonViID == donvi.iID_Ma ? "selected" : string.Empty) data-madonvi="@donvi.iID_MaDonVi">@Html.Raw(donvi.sTen)</option>
+                    }
+                }
+            </select>
+        </div>
+
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-4">
+            <label for="slbNamBaoCaoTu">Năm báo cáo từ</label>
+            @Helpers.Required()
+            <div>
+                <select id="slbNamBaoCaoTu" name="slbNamBaoCaoTu" required class="form-control" @(Model.ID != Guid.Empty ? "disabled" : string.Empty)>
+                    @if (ViewBag.ListNamBaoCaoTu != null)
+                    {
+                        foreach (var namBaoCaoTu in (List<Dropdown_QuyetToanDAHT>)ViewBag.ListNamBaoCaoTu)
+                        {
+                            <option value="@namBaoCaoTu.Value" @(Model.iNamBaoCaoTu == namBaoCaoTu.Value ? "selected" : string.Empty)>@Html.Raw(namBaoCaoTu.Label)</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <label for="slbNamBaoCaoDen">Năm báo cáo đến</label> 
+            @Helpers.Required()
+            <div>
+                <select id="slbNamBaoCaoDen" name="slbNamBaoCaoDen" required class="form-control" @(Model.ID != Guid.Empty ? "disabled" : string.Empty)>
+                    @if (ViewBag.ListNamBaoCaoDen != null)
+                    {
+                        foreach (var namBaoCaoDen in (List<Dropdown_QuyetToanDAHT>)ViewBag.ListNamBaoCaoDen)
+                        {
+                            <option value="@namBaoCaoDen.Value" @(Model.iNamBaoCaoDen == namBaoCaoDen.Value ? "selected" : string.Empty)>@Html.Raw(namBaoCaoDen.Label)</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <label for="slbTiGia">Tỉ giá</label>
+            <select id="slbTiGia" name="slbTiGia" class="form-control">
+                @if (ViewBag.ListTiGia != null)
+                {
+                    foreach (var tiGia in (List<NH_DM_TiGia>)ViewBag.ListTiGia)
+                    {
+                        <option value="@tiGia.ID" @(Model.iID_TiGiaID == tiGia.ID ? "selected" : string.Empty) data-matigia="@tiGia.ID">@Html.Raw(tiGia.sTenTiGia)</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <label for="txtMoTa">Mô tả</label>
+            <div>
+                <textarea id="txtMoTa" required class="form-control" style="max-width: 100%">@Html.Raw(Model.sMoTa)</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-center">
+        <button class="btn btn-default" id="btnHuyModal" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i><span>Hủy</span></button>
+        <button class="btn btn-primary" onclick="Save(@ViewBag.IsTongHop)" id="btnLuuModal"><i class="fa fa-download" aria-hidden="true"></i><span>Lưu</span></button>
+    </div>
+</div>
+<script src="~/Scripts/QLNH/QuyetToan/jsUpdateQuyetToanDuAnHT.js"></script>

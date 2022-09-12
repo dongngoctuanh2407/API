@@ -1,0 +1,145 @@
+﻿@using Viettel.Domain.DomainModel
+@model VDT_QT_BCQuyetToanNienDo
+
+@{ ViewBag.Title = "Update";
+                Layout = "~/Views/Shared/_LayoutWebNew.cshtml"; }
+
+
+@section Styles{
+    <link href="~/Content/plugins/dropdowntree.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/Content/css/DanhMuc/style.css">
+    <script src="~/Scripts/js/dropdowntree.js"></script>
+    <script src="/Scripts/sheet/jsNumber.js" type="text/javascript"></script>
+}
+
+<style>
+    .table-parent th {
+        text-align: center;
+        border-top: 2px solid #ddd;
+    }
+</style>
+
+<div class="main">
+    <div class="panel-list-item col-sm-12">
+        <input type="hidden" id="objData" value="@Model">
+        <input type="hidden" id="iIDBcQuyetToan" value="@Model.iID_BCQuyetToanNienDoID">
+
+        <div class="card">
+            <div class="card-body create_thdt">
+
+                <div class="form-group">
+                    <h4 class="color-text-red">Thông tin quyết toán:</h4>
+                    <hr class='color-background-red' />
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <label for="drpDonViQuanLy" class="">Đơn vị quản lý <span class="require">*</span></label>
+                            @Html.DropDownList("drpDonViQuanLy", ViewBag.drpDonViQuanLy as List<SelectListItem>, new { @class = "form-control clearable" })
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="txtNamKeHoach" class="">Năm kế hoạch <span class="require">*</span></label>
+                            <input type='number' class="form-control clearable" id="txtNamKeHoach" value="@Model.iNamKeHoach" />
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="txtSoPheDuyet" class="">Số quyết định <span class="require">*</span></label>
+                            <input type='text' class="form-control clearable" id="txtSoPheDuyet" value="@Model.sSoDeNghi" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3">
+                            <label for="txtNgayPheDuyet" class="">Ngày đề nghị <span class="require">*</span></label>
+                            <div class='input-group date'>
+                                <input type='text' class="form-control" id="txtNgayPheDuyet" value="@Model.dNgayDeNghi" />
+                                <span class="btn-default input-group-addon">
+                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="drpNguonVon" class="">Nguồn vốn <span class="require">*</span></label>
+                            @Html.DropDownList("drpNguonVon", ViewBag.drpNguonVon as List<SelectListItem>, new { @class = "form-control clearable" })
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="drpLoaiThanhToan" class="">Loại thanh toán <span class="require">*</span></label>
+                            @Html.DropDownList("drpLoaiThanhToan", ViewBag.drpLoaiThanhToan as List<SelectListItem>, new { @class = "form-control clearable" })
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="drpCoQuanThanhToan" class="">Cơ quan thanh toán <span class="require">*</span></label>
+                            @Html.DropDownList("drpCoQuanThanhToan", ViewBag.drpCoQuanThanhToan as List<SelectListItem>, new { @class = "form-control clearable" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h4 class="color-text-red">Thông tin chi tiết:</h4>
+                    <hr class='color-background-red' />
+
+                    <div id="grp_loaichungtu" class="col-sm-12 col-md-12 col-lg-12">
+                        <input id="dxChungTu" type="radio" value="1" name="groupVoucher" onclick="ChangeVoucher()" checked="checked">
+                        <label for="dxChungTu" style="margin-right: 1rem;">Chứng từ</label>
+                        <input id="dxChungTuTongHop" type="radio" value="2" name="groupVoucher" onclick="ChangeVoucher()">
+                        <label for="dxChungTuTongHop">Chứng từ tổng hợp</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div id="ViewTable" style="height:800px;"></div>
+                    <div id="ViewTablePhanTich" style="height:800px;display:none;"></div>
+                </div>
+
+                <div class="form-group text-center">
+                    <button class="btn btn-default" onclick="CancelSaveData()"><i class="fa fa-ban" aria-hidden="true"></i><span>Hủy</span></button>
+                    <button class="btn btn-primary" onclick="Insert()"><i class="fa fa-download" aria-hidden="true"></i><span>Lưu</span></button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/QLVonDauTu/QuyetToan/jsVdtQtBcQuyetToanNienDo.js"></script>
+    <script>
+        $(document).ready(function () {
+            CheckIsUpdate();
+            ChangeVoucher();
+
+            $("#drpLoaiThanhToan").change(function (e) {
+                ChangeLoaiThanhToan();
+            });
+            $("#drpDonViQuanLy").change(function (e) {
+                RenderGridView();
+            });
+            $("#iNamKeHoach").change(function (e) {
+                RenderGridView();
+            });
+            $("#drpNguonVon").change(function (e) {
+                ChangeLoaiThanhToan();
+            });
+            $("#drpCoQuanThanhToan").change(function (e) {
+                RenderGridView();
+            });
+            $("#txtNgayPheDuyet").change(function (e) {
+                RenderGridView();
+            });
+
+            $(".currently").on("change", function () {
+                if ($(this).val() == null) {
+                    $(this).val(0);
+                } else {
+                    if ($.isNumeric($(this).val())) {
+                        var sNumber = Number($(this).val()).toLocaleString('vi-VN');
+                        $(this).val(sNumber);
+                    }
+                    else {
+                        $(this).val(0);
+                    }
+                }
+            });
+
+            $("#drpLoaiThanhToan").change();
+        });
+
+        $("#drpLoaiThanhToan").trigger("change");
+    </script>
+}

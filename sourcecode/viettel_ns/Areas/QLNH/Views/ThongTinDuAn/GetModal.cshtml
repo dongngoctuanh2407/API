@@ -1,0 +1,288 @@
+﻿@using Viettel.Models.QLNH
+@using Viettel.Domain.DomainModel
+@using Viettel.Models.Shared
+@using DomainModel
+@using System.Globalization;
+@model NHDAThongTinDuAnViewModel
+@using VIETTEL.Common
+@{
+    ViewBag.Title = "Thông Tin Dự Án";
+    Layout = "";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/css/DanhMuc/style.css">
+
+<div class="modal-body">
+    <input type="hidden" id="hidDuAnID" value="@Model.ThongTinDuAnDetail.ID" />
+    <input type="hidden" id="hState" value="@ViewBag.State" />
+    <h4 class="color-text-red">Thông tin căn cứ:</h4>
+    <hr class='color-background-red' />
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <label for="slbKHTongTheBQP">Sổ kế hoạch chi tiết BQP</label>
+            @Helpers.Required()
+            <select id="slbKHTongTheBQP" name="slbKHTongTheBQP" class="form-control" onclick="ChangeBQPSelect()">
+                @if (ViewBag.ListBQP != null)
+                {
+                    foreach (var bqp in (List<NH_KHChiTietBQP_NhiemVuChiModel>)ViewBag.ListBQP)
+                    {
+
+                        <option value="@bqp.ID" @(Model.ThongTinDuAnDetail.iID_BQP == bqp.ID ? "selected" : string.Empty)>@Html.Raw(bqp.sSoKeHoachBQP)</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label for="slbBQuanLy">B Quản Lý</label>
+            <select id="slbBQuanLy" name="slbBQuanLy" class="form-control">
+                @if (ViewBag.ListPhongBan != null)
+                {
+                    foreach (var donvi in (List<NS_PhongBan>)ViewBag.ListPhongBan)
+                    {
+                        <option value="@donvi.iID_MaPhongBan" @(Model.ThongTinDuAnDetail.iID_BQuanLyID == donvi.iID_MaPhongBan ? "selected" : string.Empty)>@Html.Raw(donvi.sTen)</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label for="slbDonVi">Đơn vị</label>
+            @Helpers.Required()
+            <select id="slbDonVi" name="slbDonVi" class="form-control" onclick="ChangeDVSelect()">
+                @if (ViewBag.ListDonVi != null)
+                {
+                    foreach (var donvi in (List<NS_DonVi>)ViewBag.ListDonVi)
+                    {
+                        <option value="@donvi.iID_Ma" @(Model.ThongTinDuAnDetail.iID_DonViID == donvi.iID_Ma ? "selected" : string.Empty) data-madonvi="@donvi.iID_MaDonVi">@Html.Raw(donvi.sTen)</option>
+
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label for="slbChuongTrinh">Tên chương trình</label>
+            <select id="slbChuongTrinh" name="slbChuongTrinh" class="form-control">
+                @if (ViewBag.ListChuongTrinh != null)
+                {
+                    foreach (var donvi in (List<NH_KHChiTietBQP_NhiemVuChi>)ViewBag.ListChuongTrinh)
+                    {
+                        <option value="@donvi.ID" @(Model.ThongTinDuAnDetail.iID_KHCTBQP_ChuongTrinhID == donvi.ID ? "selected" : string.Empty)>@Html.Raw(donvi.sTenNhiemVuChi)</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <h4 class="color-text-red">Thông tin dự án:</h4>
+        <hr class='color-background-red' />
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <label for="txtMaDuAn">Mã dự án</label>
+                @Helpers.Required()
+                <div>
+                    <div><input type="text" id="txtMaDuAn" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.sMaDuAn)" maxlength="300" autocomplete="off" /></div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <label for="txtTenDuAn">Tên dự án</label>
+                @Helpers.Required()
+                <div><input type="text" id="txtTenDuAn" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.sTenDuAn)" maxlength="300" autocomplete="off" /></div>
+            </div>
+            <div class="col-sm-3">
+                <label for="txtSoChuTruongDauTu ">Số chủ trương đầu tư</label>
+                <div><input type="text" id="txtSoChuTruongDauTu" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.sSoChuTruongDauTu)" maxlength="300" autocomplete="off" /></div>
+            </div>
+
+            <div class="col-sm-3">
+                <label for="txtNgayBanHanhCTDT ">Ngày ban hành chủ trương đầu tư</label>
+                <div class='input-group date'>
+                    <input id="txtNgayBanHanhCTDT" class="form-control" value="@(Model.ThongTinDuAnDetail.dNgayChuTruongDauTu.HasValue ? Model.ThongTinDuAnDetail.dNgayChuTruongDauTu.Value.ToString("dd/MM/yyyy") : string.Empty)" autocomplete="off" />
+
+                    <span class="btn-default input-group-addon">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <label for="txtSoQuyetDinhDauTu ">Sổ quyết định đầu tư</label>
+            @Helpers.Required()
+            <div><input type="text" id="txtSoQuyetDinhDauTu" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.sSoQuyetDinhDauTu)" maxlength="300" autocomplete="off" /></div>
+        </div>
+        <div class="col-sm-3">
+            <label for="txtNgayBanHanhQuyetDinhDauTu ">Ngày ban hành Quyết định đầu tư</label>
+            <div class='input-group date'>
+                <input id="txtNgayBanHanhQuyetDinhDauTu" class="form-control" value="@(Model.ThongTinDuAnDetail.dNgayQuyetDinhDauTu .HasValue ? Model.ThongTinDuAnDetail.dNgayQuyetDinhDauTu .Value.ToString("dd/MM/yyyy") : string.Empty)" autocomplete="off" />
+
+                <span class="btn-default input-group-addon">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                </span>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <label for="txtSoDuToanTu ">Số Dự toán</label>
+            <div><input type="text" id="txtSoDuToanTu" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.sSoDuToan)" maxlength="300" autocomplete="off" /></div>
+        </div>
+        <div class="col-sm-3">
+            <label for="txtNgayBanHanhDuToan ">Ngày ban hành Dự toán</label>
+            <div class='input-group date'>
+                <input id="txtNgayBanHanhDuToan" class="form-control" value="@(Model.ThongTinDuAnDetail.dNgayDuToan.HasValue ? Model.ThongTinDuAnDetail.dNgayDuToan.Value.ToString("dd/MM/yyyy") : string.Empty)" autocomplete="off" />
+                <span class="btn-default input-group-addon">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <label for="slbChuDauTu">Chủ đầu tư</label>s
+            <select id="slbChuDauTu" name="slbChuDauTu" class="form-control">
+                @if (ViewBag.ListChuDauTu != null)
+                {
+                    foreach (var donvi in (List<DM_ChuDauTu>)ViewBag.ListChuDauTu)
+                    {
+                        <option value="@donvi.ID" @(Model.ThongTinDuAnDetail.iID_ChuDauTuID == donvi.ID ? "selected" : string.Empty)>@Html.Raw(donvi.sTenCDT)</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label for="slbPhanCapPheDuyet">Phân cấp phê duyệt</label>
+            <select id="slbPhanCapPheDuyet" name="slbPhanCapPheDuyet" class="form-control">
+                @if (ViewBag.ListDanhMucPCPD != null)
+                {
+                    foreach (var danhMuc in (List<NH_DM_PhanCapPheDuyet>)ViewBag.ListDanhMucPCPD)
+                    {
+                        <option value="@danhMuc.ID" @(Model.ThongTinDuAnDetail.iID_CapPheDuyetID == danhMuc.ID ? "selected" : string.Empty)>@Html.Raw(danhMuc.sTen)</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <label for="txtThoiGianThucHienTu ">Thời gian thực hiện từ</label>
+            <div><input type="text" id="txtThoiGianThucHienTu" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.sKhoiCong)" autocomplete="off" /></div>
+
+        </div>
+        <div class="col-sm-3">
+            <label for="txtThoiGianThucHienDen ">Thời gian thực hiện đến</label>
+
+            <div><input type="text" id="txtThoiGianThucHienDen" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.sKetThuc)" autocomplete="off" /></div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <label for="slbTiGia">Tỉ giá</label>
+            @Helpers.Required()
+            <select id="slbTiGia" name="slbTiGia" class="form-control" onchange="ChangeTiGiaSelect();">
+                @if (ViewBag.ListTiGia != null)
+                {
+                    foreach (var tigia in (List<NH_DM_TiGia>)ViewBag.ListTiGia)
+                    {
+                        <option value="@tigia.ID" @(Model.ThongTinDuAnDetail.iID_TiGiaID == tigia.ID ? "selected" : string.Empty) data-mg="@tigia.sMaTienTeGoc">@Html.Raw(tigia.sTenTiGia)</option>
+                    }
+                }
+            </select>
+            <div id="tienTeQuyDoiID" class="text-italic h5">
+                @if (ViewBag.HtmlTienTe != null)
+                {
+                    @ViewBag.HtmlTiente
+                }
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <label for="slbMaNgoaiTeKhac">Mã ngoại tệ khác</label>
+            @*@Html.DropDownList("slbMaNgoaiTeKhac", (SelectList)(ViewBag.ListTiGiaChiTiet), new { @class = "form-control", @id = "slbMaNgoaiTeKhac", @onchange = "ChangeNgoaiTeKhacSelect()" })*@
+            <select id="slbMaNgoaiTeKhac" name="slbMaNgoaiTeKhac" class="form-control" onchange="ChangeNgoaiTeKhacSelect();">
+                @if (ViewBag.ListTiGiaChiTiet != null)
+                {
+                    foreach (var donvi in (List<NH_DM_TiGia_ChiTiet>)ViewBag.ListTiGiaChiTiet)
+                    {
+                        <option value="@donvi.ID" @(Model.ThongTinDuAnDetail.sMaNgoaiTeKhac == donvi.ID.ToString() ? "selected" : string.Empty)>@Html.Raw(donvi.sMaTienTeQuyDoi)</option>
+                    }
+                }
+            </select>
+
+        </div>
+        <div class="col-sm-3">&nbsp;</div>
+        <div class="col-sm-3">&nbsp;</div>
+    </div>
+    <div class="form-group row">
+
+
+        <div class="col-sm-3">
+            <label for="txtHopDongUSD">Tổng mức đầu tư (USD)</label>
+            <div>
+                <input readonly id="txtHopDongUSD" class="form-control" name="tmdt_USD" value="@Html.Raw(Model.ThongTinDuAnDetail.fGiaTriUSD)" autocomplete="off" />
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <label for="txtHopDongVND">Tổng mức đầu tư (VND)</label>
+            <div>
+                <input readonly id="txtHopDongVND" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.fGiaTriVND)" name="tmdt_VND" />
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <label for="txtHopDongEUR">Tổng mức đầu tư (EUR)</label>
+            <div>
+                <input readonly id="txtHopDongEUR" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.fGiaTriEUR)" name="tmdt_EUR" />
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <label for="txtHopDongNgoaiTeKhac">Tổng mức đầu tư(ngoại tệ khác) </label>
+            <div>
+                <input readonly id="txtHopDongNgoaiTeKhac" name="tmdt_NTK" class="form-control" value="@Html.Raw(Model.ThongTinDuAnDetail.fGiaTriNgoaiTeKhac)" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <h4 class="color-text-red">Thông tin chi phí</h4>
+        <hr class='color-background-red' />
+        <button class="btn btn-primary pull-right" style="margin-right:10px;" onclick="ThemMoi(); " data-toggle="modal"><i class="fa fa-plus" aria-hidden="true"></i>Thêm Mới</button>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-bordered" id="tbListChiphi">
+                    <thead>
+                    <th style="white-space: nowrap">STT</th>
+                    <th style="white-space: nowrap">Tên Chi Phí</th>
+                    <th style="white-space: nowrap">Giá trị phê duyệt(USD)</th>
+                    <th style="white-space: nowrap">Giá trị phê duyệt(VND)</th>
+                    <th style="white-space: nowrap">Giá trị phê duyệt(EUR)</th>
+                    <th style="white-space: nowrap">Giá trị phê duyệt(Khác)</th>
+                    <th style="white-space: nowrap">Thao tác</th>
+                    </thead>
+                    <tbody id="tbodyTableChiPhi">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-center">
+        <button class="btn btn-default" onclick="Cancel()"><i class="fa fa-ban" aria-hidden="true"></i><span>Hủy</span></button>
+        <button class="btn btn-primary" onclick="Save()" id="btnLuuModal"><i class="fa fa-download" aria-hidden="true"></i><span>Lưu</span></button>
+    </div>
+</div>
+<script>
+    Event();
+</script>
+<style>
+    /*    .table-bordered tr, td {
+                        border: 1px solid
+                    }*/
+    .create_thdt h4 {
+        font-size: 17px;
+    }
+
+    .r_STT {
+        text-align: center;
+    }
+
+    .table-bordered tbody {
+        /*display: block;*/
+        /*height: 150px;*/
+        overflow: auto;
+    }
+</style>

@@ -1,0 +1,180 @@
+﻿@using Viettel.Models.QLNH
+@model QuyetToan_ChungTuTaiSanModel
+
+<div class="modal-body">
+    <div class="form-group">
+        <div>
+            <h4 class="color-text-red">Thông tin chứng từ:</h4>
+            <hr class="color-background-red">
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-4">
+                <label for="txtTenChungTu">Tên chứng từ</label>
+                <input type="text" class="form-control" value="@Html.Raw(Model.ChungTuModel.sTenChungTu)" autocomplete="off"  />
+            </div>
+            <div class="col-sm-4">
+                <label for="txtSoChungTu">Số chứng từ</label>
+                <input type="text" class="form-control" value="@Html.Raw(Model.ChungTuModel.sSoChungTu)" autocomplete="off" />
+            </div>
+            <div class="col-sm-4">
+                <label for="dNgayChungTu">Ngày chứng từ</label>
+                <input type="text" class="form-control" value="@{
+                                                                if (Model.ChungTuModel.dNgayChungTu.HasValue)
+                                                                {
+                                                                    @Html.Raw(Model.ChungTuModel.dNgayChungTu.Value.ToString("dd/MM/yyyy"));
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.Raw(Model.ChungTuModel.dNgayChungTu)
+                                                                }
+                                                                }"autocomplete="off"  />
+            </div>
+
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <h4 class="color-text-red">Thông tin tài sản:</h4>
+            <hr class="color-background-red">
+        </div >
+        <div style=" overflow-x : auto">
+            <table class="table table-bordered" id="tbListTaiSan">
+
+                <thead>
+                <th style="white-space: nowrap">STT</th>
+                <th style="white-space: nowrap">Mã tài sản</th>
+                <th style="white-space: nowrap">Tên tài sản</th>
+                <th style="white-space: nowrap">Loại tài sản</th>
+                <th style="white-space: nowrap">Mô tả</th>
+                <th style="white-space: nowrap">Ngày bắt đầu sử dụng</th>
+                <th style="white-space: nowrap">Tình trạng sử dụng</th>
+                <th style="white-space: nowrap">Số lượng</th>
+                <th style="white-space: nowrap">Đơn vị tính</th>
+                <th style="white-space: nowrap">Nguyên giá</th>
+                <th style="white-space: nowrap">Trạng thái sử dụng</th>
+                <th style="white-space: nowrap">Đơn vị sử dụng</th>
+                <th style="white-space: nowrap">Thuộc dự án</th>
+                <th style="white-space: nowrap">Thuộc hợp đồng</th>
+                </thead>
+
+                <tbody>
+                    @{
+                        int index = 0;
+                        foreach (var item in Model.ListTaiSan.Items)
+                        {
+                            index++;
+                            <tr style="cursor: pointer">
+                                <td align="center" class="tablethin">@index</td>
+
+                                <td align="left"class="tablethin">@item.sMaTaiSan</td>
+
+                                <td align="left"class="tablethin">@item.sTenTaiSan</td>
+
+                                <td align="left" class="tablethin">
+                                    @{if (item.iLoaiTaiSan == 0)
+                                        {
+                                            @Html.Raw("") ;
+                                        }
+                                        if (item.iLoaiTaiSan == 1)
+                                        {
+                                            @Html.Raw("Tài sản hữu hình") ;
+                                        }
+                                        if (item.iLoaiTaiSan == 2)
+                                        {
+                                            @Html.Raw(" Tài sản vô hình") ;
+                                        }
+                                    }
+                                </td>
+
+                                <td align="left"class="tablethin">@item.sMoTaTaiSan</td>
+
+                                <td align="left"class="tablethin">
+                                    @{
+                                        if (@item.dNgayBatDauSuDung.HasValue)
+                                        {
+                                            @item.dNgayBatDauSuDung.Value.ToString("dd/MM/yyyy")
+                                        }
+                                        else
+                                        {
+                                            @item.dNgayBatDauSuDung
+                                        }
+                                    }
+                                </td>
+
+                                <td align="left" class="tablethin">
+                                    @{
+                                        if (item.iTrangThai == 0)
+                                        {
+                                            @Html.Raw("") ;
+                                        }
+                                        if (item.iTrangThai == 1)
+                                        {
+                                            @Html.Raw("Mới") ;
+                                        }
+                                        if (item.iTrangThai == 2)
+                                        {
+                                            @Html.Raw("Cũ") ;
+                                        }
+                                         if (item.iTrangThai == 3)
+                                        {
+                                            @Html.Raw("Hết giá trị") ;
+                                        }
+                                    }
+                                </td>
+
+                                <td align="left"class="tablethin">@item.fSoLuong</td>
+
+                                <td align="left"class="tablethin">@item.sDonViTinh</td>
+
+                                <td align="left"class="tablethin">@item.fNguyenGia</td>
+
+                                <td align="left"class="tablethin">
+                                    @{
+                                        if (item.iTinhTrangSuDung == 0)
+                                        {
+                                            @Html.Raw("") ;
+                                        }
+                                        if (item.iTinhTrangSuDung == 1)
+                                        {
+                                            @Html.Raw("Chưa sử dụng") ;
+                                        }
+                                        else if (item.iTinhTrangSuDung == 2)
+                                        {
+                                            @Html.Raw("Đang sử dụng") ;
+                                        }
+                                        if(item.iTinhTrangSuDung == 3)
+                                        {
+                                            ;
+                                            @Html.Raw("Không sử dụng") ;
+                                        }
+                                    }
+                                </td>
+
+                                <td align="left"class="tablethin">@item.BDonVi</td>
+
+                                <td align="left"class="tablethin">@item.BDuAn</td>
+
+                                <td align="left"class="tablethin">@item.bHopDong</td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+
+            </table>
+        </div>
+     
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="text-center">
+        <button class="btn btn-default" onclick="back()"><i class="fa fa-ban" aria-hidden="true"></i><span>Hủy</span></button>
+    </div>
+</div>
+<style>
+    .tablethin {
+        min-width: 150px !important;
+    }
+</style>

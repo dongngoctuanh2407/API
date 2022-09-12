@@ -1,0 +1,248 @@
+﻿@using Viettel.Models.QLNH
+@using VIETTEL.Helpers
+@using Viettel.Domain.DomainModel
+@using Viettel.Models.QLNH.BaoCaoTHTHDuAn
+@model BaoCaoTinhHinhModel
+@{
+    int pageIndex = (Model.ListChiTiet._paging.CurrentPage - 1) * Model.ListChiTiet._paging.ItemsPerPage;
+}
+<h4 class="red-colour">Báo cáo tình hình thực hiện dự án</h4>
+<table class="table table-bordered" id="tbListTaiSan">
+    <thead class="header-search">
+        <tr id="form_tr">
+            <th width="15%">
+                <select id="txtiID_DonViID" name="iID_DonViID" class="form-control" style="min-width:150px" onchange="GetDuAnByDonVi(this)">
+                    @{
+                        foreach (var donvi in (List<NS_DonVi>)ViewBag.ListThongTinDonVi)
+                        {
+                            <option value="@donvi.iID_Ma" data-madonvi="@donvi.iID_MaDonVi"> @donvi.sTen</option>
+                        }
+                    }
+                </select>
+            </th>
+            <th width="15%">
+                <select name="txtiID_DuAnID" id="txtiID_DuAnID" class="form-control" style="min-width:150px">
+                </select>
+            </th>
+            <th width="15%">
+                <div class='input-group date'>
+                    <input type="text" id="txtdBatDau" name="dBatDau" class="form-control" value="" autocomplete="off" placeholder="dd/MM/yyyy" />
+                    <span class="btn-default input-group-addon">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                    </span>
+                </div>
+            </th>
+            <th width="15%">
+                <div class='input-group date'>
+                    <input type="text" id="txtdKetThuc" name="dKetThuc" class="form-control" value="" autocomplete="off" placeholder="dd/MM/yyyy" />
+                    <span class="btn-default input-group-addon">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                    </span>
+                </div>
+            </th>
+            <th width="10%"><button class="btn btn-info" onclick="ChangePage()"><i class="fa fa-search" aria-hidden="true"></i>Tìm kiếm</button></th>
+            <th width="10%"><button class="btn btn-info" onclick="ResetChangePage()"><i class="fa fa-refresh" aria-hidden="true"></i>Làm mới</button></th>
+            <th width="5%"><button class="btn btn-info " onclick="ExportExcel('xls')"><i class="fa fa-file-excel-o" aria-hidden="true"></i>In Excel</button></th>
+            <th width="5%"><button class="btn btn-info " onclick="ExportExcel('pdf')"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>In PDF</button></th>
+            </trform_tr>
+    </thead>
+</table>
+<h4 class="headermini"> THÔNG TIN DỰ ÁN</h4>
+<div class=" row">
+    <div class="col-lg-4">
+        <p id="sTenDuAn">
+            Tên dự án: @{
+                if (Model.DuAnModel.sTenDuAn == null)
+                {
+                    @Html.Raw("")
+                }
+                else
+                {
+                    @Html.Raw(Model.DuAnModel.sTenDuAn);
+                }
+            }
+        </p>
+    </div>
+    <div class="col-lg-3">
+        <p id="sSoQuyetDinhDauTu">
+            Số QĐĐT (Điều chỉnh lần cuối): @{
+                if (Model.DuAnModel.sSoQuyetDinhDauTu == null)
+                {
+                    @Html.Raw("")
+                }
+                else
+                {
+                    @Html.Raw(Model.DuAnModel.sSoQuyetDinhDauTu);
+                }
+            }
+        </p>
+    </div>
+    <div class="col-lg-5">
+        <p id="dNgayQuyetDinhDauTu">
+            Ngày QĐĐT(Điều chỉnh lần cuối): @{
+                if (Model.DuAnModel.dNgayQuyetDinhDauTu == null)
+                {
+                    @Html.Raw("")
+                }
+                else
+                {
+                    @Html.Raw(Model.DuAnModel.dNgayQuyetDinhDauTu.Value.ToString("dd/MM/yyyy"));
+                }
+            }
+        </p>
+    </div>
+
+
+</div>
+<div class=" row task">
+    <div class="col-lg-4">
+        <p id="ChuDauTu">Chủ đầu tư : @Model.DuAnModel.ChuDauTu</p>
+    </div>
+    <div class="col-lg-3">
+        <p id="sTen">Phân cấp: @Model.DuAnModel.sTen</p>
+    </div>
+    <div class="col-lg-5">
+        <p id="fGiaTriUSD">Tổng mức đầu tư (USD): @Model.DuAnModel.fGiaTriUSD</p>
+    </div>
+
+
+</div>
+<div class=" row task">
+    <div class="col-lg-4">
+        <p id="sKetThuc">Thời gian thực hiện: @Model.DuAnModel.sKhoiCong-@Model.DuAnModel.sKetThuc</p>
+    </div>
+    <div class="col-lg-3">
+        <p>Lũy kế kinh phí đã cấp cho CĐT: @Html.Raw(ViewBag.Sum) </p>
+    </div>
+    <div class="col-lg-5">
+        <p>Lũy kế kinh phí đã giải ngân cho nhà thầu, đơn vị ủy thác (gồm thanh toán, tạm ứng): @Html.Raw(ViewBag.Sumgn)</p>
+    </div>
+</div>
+<h4 class="headermini">NỘI DUNG CHI TIẾT CẤP QUA BQP</h4>
+<div class="col-sm-8" style="display:flex;padding-left:0px;">
+    <h6 class="control-label">Danh sách đề nghị thanh toán (@Model.ListChiTiet._paging.TotalItems)</h6>
+</div>
+
+<div class="tooltip-header-search">
+    <table class="table table-bordered" id="tbListNoiDung">
+        <thead>
+            <tr>
+                <th width="5%" rowspan="2">STT</th>
+                <th width="8%" rowspan="2">Số đề nghị thanh toán</th>
+                <th width="8%" rowspan="2">Ngày đề nghị thanh toán</th>
+                <th width="10%" rowspan="2">Chủ đầu tư</th>
+                <th width="8%" rowspan="2">Đơn vị thụ hưởng (Nhà thầu, Đơn vị ủy thác)</th>
+                <th width="8%" rowspan="2">Loại nội dung chi</th>
+                <th width="8%" rowspan="2">Cơ quan thanh toán</th>
+                <th width="8%" rowspan="2">Loại đề nghị thanh toán</th>
+                <th width="16%" colspan="2">Số kinh phí đề nghị thanh toán</th>
+                <th width="16%" colspan="2">Số kinh phí phê duyệt thanh toán</th>
+            </tr>
+            <tr>
+                <th width="8%">USD</th>
+                <th width="8%">VND</th>
+                <th width="8%">USD</th>
+                <th width="8%">VND</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 0;
+                foreach (var item in Model.ListChiTiet.Items)
+                {
+                    index++;
+                    <tr style="cursor: pointer">
+                        <td align="center">@( index)</td>
+
+                        <td align="center">@item.sSoDeNghi</td>
+
+                        <td align="center">
+                            @{
+                                if (@item.dNgayDeNghi.HasValue)
+                                {
+                                    @item.dNgayDeNghi.Value.ToString("dd/MM/yyyy")
+                                }
+                                else
+                                {
+                                    @item.dNgayDeNghi
+                                }
+                            }
+                        </td>
+                        <td align="center">@item.ChuDauTu</td>
+                        <td align="center">@item.sTenNhaThau</td>
+                        <td align="center">
+                            @{if (item.iLoaiNoiDungChi == 1)
+                                {
+                                    @Html.Raw("Chi ngoại tệ")
+                                }
+                                if (item.iLoaiNoiDungChi == 2)
+                                {
+                                    @Html.Raw("Chi trong nước")
+                                }
+                            }
+                        </td>
+                        <td align="center">
+                            @{if (item.iCoQuanThanhToan == 1)
+                                {
+                                    @Html.Raw("CTC cấp")
+                                }
+                                if (item.iCoQuanThanhToan == 2)
+                                {
+                                    @Html.Raw("Đơn vị cấp")
+                                }
+                            }
+                        </td>
+                        <td align="center">
+                            @{if (item.iLoaiDeNghi == 1)
+                                {
+                                    @Html.Raw("Cấp kinh phí")
+                                }
+                                if (item.iLoaiDeNghi == 2)
+                                {
+                                    @Html.Raw("Thanh toán ")
+                                }
+                                if (item.iLoaiDeNghi == 3)
+                                {
+                                    @Html.Raw("Tạm ứng ")
+                                }
+                            }
+                        </td>
+                        <td>@item.fTongDeNghi_USD</td>
+                        <td>@item.fTongDeNghi_VND</td>
+                        <td>@item.fTongPheDuyet_USD</td>
+                        <td>@item.fTongPheDuyet_VND</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    @Html.BuildPagingButtons(Model.ListChiTiet._paging)
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.date')
+            .datepicker({
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: 'vi',
+                todayHighlight: true,
+            });
+        $("tr").hover(function () {
+            $(this).css("background-color", "#e7f8fe");
+        }, function () {
+            $(this).css("background-color", "");
+        });
+    });
+
+</script>
+<style>
+    .headermini {
+        margin-top: 20px
+    }
+
+    .task {
+        margin-top: 10px
+    }
+</style>

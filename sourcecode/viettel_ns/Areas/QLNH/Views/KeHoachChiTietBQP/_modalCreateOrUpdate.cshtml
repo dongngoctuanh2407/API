@@ -1,0 +1,160 @@
+﻿@using Viettel.Models.KeHoachChiTietBQP;
+@using Viettel.Domain.DomainModel;
+@using DomainModel;
+@using System.Globalization;
+
+@model NH_KHChiTietBQPModel
+
+<div class="modal-body">
+    <input type="hidden" id="hIdKeHoachChiTietBQP" value="@Model.ID" />
+    <input type="hidden" id="hILoai" value="@Model.iLoai" />
+    <input type="hidden" id="hiID_ParentID" value="@Model.iID_ParentID" />
+    <input type="hidden" id="hiID_TiGiaID" value="@Model.iID_TiGiaID" />
+    <input type="hidden" id="hiLanDieuChinh" value="@Model.iLanDieuChinh" />
+
+    @* Row 1 *@
+    <div class="form-group row">
+        <div class="col-sm-4">
+            <label for="iLoai">Loại kế hoạch</label>
+            <select id="iLoai" class="form-control" @(ViewBag.State == "UPDATE" || ViewBag.State == "ADJUST" ? "disabled" : "")>
+                <option value="1">Theo giai đoạn</option>
+                <option value="3">Theo giai đoạn con</option>
+                <option value="2">Theo năm</option>
+            </select>
+        </div>
+        <div id="formGiaiDoanTu" class="col-sm-4">
+            <label for="iGiaiDoanTu">Giai đoạn từ</label>
+            <input type="text" required id="txtGiaiDoanTu" onkeyup="RegexNumber(this)" class="form-control" value="@Html.Raw(Model.iGiaiDoanTu)" maxlength="255" autocomplete="off" />
+        </div>
+        <div id="formGiaiDoanDen" class="col-sm-4">
+            <label for="iGiaiDoanDen">Giai đoạn đến</label>
+            <input type="text" required id="txtGiaiDoanDen" onkeyup="RegexNumber(this)" class="form-control" value="@Html.Raw(Model.iGiaiDoanDen)" maxlength="255" autocomplete="off" />
+        </div>
+        <div id="formNamKeHoach" class="col-sm-4 hidden">
+            <label for="iNamKeHoach">Năm</label>
+            <input type="text" required id="txtNamKeHoach" onkeyup="RegexNumber(this)" class="form-control" value="@Html.Raw(Model.iNamKeHoach)" maxlength="255" autocomplete="off" />
+        </div>
+    </div>
+
+    @* Row 2 *@
+    <div class="form-group row">
+        <div id="formParrentID" class="col-sm-4 invisible">
+            <label for="iID_ParentID">Số Kế hoạch chi tiết BQP cha</label>
+            @if (ViewBag.State == "UPDATE" || ViewBag.State == "ADJUST")
+            {
+                @Html.DropDownList("iID_ParentID", (SelectList)(ViewBag.ListKHChiTietBQP), new { @class = "form-control", @id = "iID_ParentID", @disabled = true })
+            }
+            else
+            {
+                @Html.DropDownList("iID_ParentID", (SelectList)(ViewBag.ListKHChiTietBQP), new { @class = "form-control", @id = "iID_ParentID" })
+            }
+        </div>
+        <div class="col-sm-4">
+            <label for="iID_KHTongTheTTCPID">Số kế hoạch tổng thể TTCP phê duyệt</label>
+            @if (ViewBag.State == "UPDATE")
+            {
+                @Html.DropDownList("iID_KHTongTheTTCPID", (SelectList)(ViewBag.ListKHTongTheTTCP), new { @class = "form-control", @id = "iID_KHTongTheTTCPID", @disabled = true })
+            }
+            else if (ViewBag.State == "ADJUST")
+            {
+                <div class='input-group'>
+                    @Html.DropDownList("iID_KHTongTheTTCPID", (SelectList)(ViewBag.ListKHTongTheTTCP), new { @class = "form-control", @id = "iID_KHTongTheTTCPID", @disabled = true })
+                    <span class="btn-default input-group-addon @(ViewBag.ParentIsActive ? "disabled" : "")"
+                          style="@(ViewBag.ParentIsActive ? "background-color: #eee" : "")"
+                          title="@(!ViewBag.ParentIsActive ? "Sử dụng bản mới nhất của kế hoạch tổng thể TTCP này?" : "")"
+                          onclick="UpdateParentTTCP('@Model.iID_KHTongTheTTCPID')">
+                        <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                    </span>
+                </div>
+            }
+            else
+            {
+                @Html.DropDownList("iID_KHTongTheTTCPID", (SelectList)(ViewBag.ListKHTongTheTTCP), new { @class = "form-control", @id = "iID_KHTongTheTTCPID" })
+            }
+
+        </div>
+        <div class="col-sm-4">
+            <label for="iID_TiGiaID">Tỉ giá</label>
+            @Helpers.Required()
+            <select id="iID_TiGiaID" name="iID_TiGiaID" class="form-control" onchange="ChangeTiGiaSelect();">
+                @if (ViewBag.ListTiGia != null)
+                {
+                    foreach (var tigia in (List<NH_DM_TiGia>)ViewBag.ListTiGia)
+                    {
+                        <option value="@tigia.ID" @(Model.iID_TiGiaID == tigia.ID ? "selected" : string.Empty) data-mg="@tigia.sMaTienTeGoc">@Html.Raw(tigia.sTenTiGia)</option>
+                    }
+                }
+            </select>
+            <hr />
+            <div id="tienTeQuyDoiID" class="text-italic h5">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="chao-banner1">
+        <label>Kế hoạch chi tiết Bộ quốc phòng phê duyệt theo giai đoạn</label>
+    </div>
+    <hr class="bg-gray" />
+    <div class="form-group row">
+        <div class="col-sm-4">
+            <label for="sSoKeHoach">Số kế hoạch</label>
+            <input type="text" required id="txtSoKeHoach" class="form-control" value="@Html.Raw(Model.sSoKeHoach)" maxlength="255" autocomplete="off" />
+        </div>
+        <div class="col-sm-4">
+            <label for="dNgayKeKoach">Ngày kế hoạch</label>
+            <div class='input-group date'>
+                <input type='text' class="form-control" id="txtNgayKeHoach" onkeyup="RegexInputDate(this)" value="@Html.Raw(Model.dNgayKeHoach.HasValue ? Model.dNgayKeHoach.Value.ToString("dd/MM/yyyy") : "")" autocomplete="off" placeholder="dd/MM/yyyy" />
+                <span class="btn-default input-group-addon">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <label for="sMoTaChiTiet">Mô tả</label>
+            <textarea rows="4" style="max-width: 100%" id="txtMoTaChiTiet" class="form-control" autocomplete="off">@Html.Raw(Model.sMoTaChiTiet)</textarea>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-center">
+        <button class="btn btn-default" id="btnHuyModal" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i><span>Hủy</span></button>
+        <button class="btn btn-primary" onclick="Save()" id="btnLuuModal"><i class="fa fa-download" aria-hidden="true"></i><span>Lưu</span></button>
+    </div>
+</div>
+<script src="~/Scripts/QLNH/KeHoachChiTietBQP/jsNH_KeHoachChiTietBQP.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        // Set UI theo form thêm mới hoặc sửa.
+        let loai = $("#hILoai").val();
+        let parentId = $("#hiID_ParentID").val();
+        let tiGiaId = $("#hiID_TiGiaID").val();
+
+        if (loai == '') {
+            // Tạo mới thì chưa có loại
+            $("#iLoai option[value='1']").attr("selected", "selected");
+            $("#iLoai").trigger("change");
+        } else if (loai == 1) {
+            if (parentId == '') {
+                // Theo giai đoạn
+                $("#iLoai option[value='1']").attr("selected", "selected");
+                $("#iLoai").trigger("change");
+            } else {
+                // Theo giai đoạn con
+                $("#iLoai option[value='3']").attr("selected", "selected");
+                $("#iLoai").trigger("change");
+            }
+        } else {
+            // Loại là "Theo năm"
+            $("#iLoai option[value='2']").attr("selected", "selected");
+            $("#iLoai").trigger("change");
+        }
+
+        if (tiGiaId != '') {
+            ChangeTiGiaSelect();
+        }
+    });
+</script>

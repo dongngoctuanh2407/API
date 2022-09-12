@@ -1,0 +1,249 @@
+﻿@using Viettel.Models.CPNH
+@using System.Globalization
+@using DomainModel
+@model CPNHNhuCauChiQuy_ModelPaging
+
+@{
+    int pageIndex = (Model._paging.CurrentPage - 1) * Model._paging.ItemsPerPage;
+}
+<div id="NhuCauChiQuy">
+    <div class="tooltip-header-search">
+        <div class="col-sm-4 col-md-4 col-lg-4" style="display:flex;padding-left:0px;">
+            <label class="control-label">Nhu cầu chi quý (@Model._paging.TotalItems)</label>
+        </div>
+    </div>
+</div>
+<div id="NhuCauChiQuyTongHop" style="display:none">
+    <div class="tooltip-header-search">
+        <div class="col-sm-4 col-md-4 col-lg-4" style="display:flex;padding-left:0px;">
+            <label class="control-label">Nhu cầu chi quý tổng hợp (<label id="txtSobannghi"></label>)</label>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-10 mb-10">
+    <div class="col-sm-3 col-md-3 col-lg-3">
+        <input id='dxChungTu' type="radio" value="0" name="groupVoucher" onclick="ChangeVoucher()" checked="checked">
+        <label for="dxChungTu" style="margin-right: 1rem;">Chứng từ</label>
+        <input id="dxChungTuTongHop" type="radio" value="1" name="groupVoucher" onclick="ChangeVoucher()">
+        <label for="dxChungTuTongHop">Chứng từ tổng hợp</label>
+    </div>
+    <div class="col-sm-9 col-md-9 col-lg-9"></div>
+    <button class="btn btn-info pull-right mr-10" onclick="ResetChangePage()"><i class="fa fa-refresh" aria-hidden="true"></i>Làm mới</button>
+    <button class="btn btn-primary pull-right mr-10" onclick="OpenModal(null, 'false', 'false')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-plus" aria-hidden="true"></i>Thêm mới</button>
+    <button class="btn btn-info pull-right mr-10" onclick="OpenModalGeneral(null, 'false', 'true')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-save" aria-hidden="true"></i>Tổng hợp</button>
+    @*<button class="btn btn-info pull-right mr-10" style="height: 41px !important " onclick="OpenModalGeneral(null, 'false', 'true')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-save" aria-hidden="true"></i>Tổng hợp <br />(B QL)</button>*@
+    <div class="dropdown pull-right mr-10">
+        <button class="dropbtn btn btn-warning" ><i class="fa fa-print" aria-hidden="true"></i>Báo cáo</button>
+        <div class="dropdown-content">
+            <button class="btn btn-warning" style="height: 50px !important; width:140px !important" onclick="ViewInBaoCao('1');" data-toggle="modal" data-target="#modalNhuCauChiQuy">Báo cáo theo QĐ<br />435 BM02</button>
+            <button class="btn btn-warning" style="height: 50px !important; width:140px !important" onclick="ViewInBaoCao('2');" data-toggle="modal" data-target="#modalNhuCauChiQuy">Báo cáo theo HĐ<br />2351 BM01</button>
+        </div>
+    </div>
+
+
+
+</div>
+@{
+    <table class="table table-bordered" id="tblNhuCauChiQuy">
+        <thead class="header-search">
+        <th width="1%"></th>
+        <th width="3%"></th>
+        <th width="7%"><input type="text" class="form-control gr_search" id="txtSodenghi" /></th>
+        <th width="7%">
+            <div style="display: flex">
+                <div class='input-group date'>
+                    <input type="text" id="txtNgaydenghi" autocomplete="off" class="form-control gr_search" placeholder="dd/MM/yyyy" />
+                    <span class="btn-default input-group-addon">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                    </span>
+                </div>
+            </div>
+        </th>
+        <th width="10%">@Html.DropDownList("iID_BQuanLyID", (SelectList)(ViewBag.ListBQuanLy), new { @class = "form-control", @id = "iBQuanly" })</th>
+        <th width="10%">@Html.DropDownList("iID_DonViID", (SelectList)(ViewBag.ListDonViQuanLy), new { @class = "form-control", @id = "iDonvi" })</th>
+        <th width="12%">
+            <div style="display: flex">
+                <div class='input-group' style="width:100%">
+                    @Html.DropDownList("iQuy", (SelectList)(ViewBag.ListQuyTypes), new { @class = "form-control", @id = "iQuyList" })
+                </div>
+                <span style="margin: 8px 5px 0px 5px;">-</span>
+                <div class='input-group'>
+                    <input type="number" class="form-control clearable gr_search" id="txtnam" />
+                </div>
+            </div>
+        </th>
+        <th width="10%"></th>
+        <th width="12%"></th>
+
+        <th width="10%"><button class="btn btn-info" onclick="ChangePage()"><i class="fa fa-search" aria-hidden="true"></i>Tìm kiếm</button></th>
+        </thead>
+        <thead>
+        <th width="1%"></th>
+        <th width="3%">STT</th>
+
+        <th width="10%">Số đề nghị</th>
+        <th width="10%">Ngày đề nghị</th>
+        <th width="12%">B quản lý</th>
+        <th width="12%">Đơn vị</th>
+        <th width="15%">Quý/Năm</th>
+        <th width="12%">Chi ngoại tệ (USD)</th>
+        <th width="15%">Chi trong nước (VND)</th>
+        <th width="10%">Thao tác</th>
+        </thead>
+        <tbody>
+            @{
+                int index = 0;
+                foreach (var item in Model.Items)
+                {
+                    index++;
+                        <tr style="cursor: pointer">
+                            <td>
+                                <input type="checkbox" class="@item.ID" onclick="SetState('@item.ID');" />
+                            </td>
+                            <td align="center">@(pageIndex + index)</td>
+                            @{
+                                if (ViewBag.TabIndex == 1)
+                                {
+                                    <td align="left">@item.sSoDeNghi</td>
+                                    <td align="left">@item.sSoDeNghi</td>
+                                }
+                            }
+
+                            <td align="left">@item.sSoDeNghi</td>
+
+                            <td align="left">@item.dNgayDeNghiStr</td>
+
+                            <td align="left">@item.BPhongBan</td>
+
+                            <td align="left">@item.BQuanLy</td>
+
+                            <td align="left">Quý @item.iQuy Năm @item.iNamKeHoach</td>
+
+                            <td align="right">@Html.Raw(item.fTongChiNgoaiTeUSD.HasValue ? CommonFunction.DinhDangSo(item.fTongChiNgoaiTeUSD.Value.ToString(CultureInfo.InvariantCulture), 2) : string.Empty)</td>
+                            
+                            <td align="right">@Html.Raw(item.fTongChiTrongNuocVND.HasValue ? CommonFunction.DinhDangSo(item.fTongChiTrongNuocVND.Value.ToString(CultureInfo.InvariantCulture), 2) : string.Empty)</td>
+
+                            <td align="center" style="vertical-align: middle !important" class="col-sm-12">
+                                @{ if (item.bIsActive == true)
+                                    {
+                                        <button type="button" class="btn-detail" onclick="OpenModalDetail('@item.ID')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></button>
+                                    }
+                                    else
+                                    {
+                                        if (ViewBag.TabIndex == 0)
+                                        {
+                                            <button type="button" class="btn-detail" onclick="OpenModalDetail('@item.ID')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn-detail" onclick="OpenModalDetailTongHop('@item.ID')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-eye fa-lg" aria-hidden="true"></i></button>
+                                        }
+
+                                        if (item.bIsKhoa == false)
+                                        {
+                                            if (item.sTongHop != null || item.sTongHop != "")
+                                            {
+                                                <button type="button" class="btn-detail" onclick="OpenModal('@item.ID', 'true', 'false')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-copy fa-lg" aria-hidden="true"></i></button>
+                                            }
+                                            if (ViewBag.TabIndex == 0)
+                                            {
+                                                <button type="button" class="btn-edit" onclick="OpenModal('@item.ID', 'false')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn-edit" onclick="OpenModalGeneral('@item.ID', 'false' , 'true')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></button>
+                                            }
+                                            <button type="button" class="btn-delete" onclick="Delete('@item.ID')" data-toggle="modal" data-target="#modalNhuCauChiQuy"><i class="fa fa-trash-o fa-lg" aria-hidden="true"></i></button>
+                                            <button type="button" class="btn-edit" onclick="LockItem('@item.ID', '@item.sSoDeNghi', '@item.bIsKhoa')"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></button>
+                                        }
+                                        else
+                                        {
+                                            if (item.iID_TongHopID == null)
+                                            {
+                                                <button type="button" class="btn-edit" onclick="LockItem('@item.ID', '@item.sSoDeNghi', '@item.bIsKhoa')"><i class="fa fa-unlock fa-lg" aria-hidden="true"></i></button>
+                                            }
+                                        }
+                                    }
+
+                                }
+                            </td>
+                        </tr>
+                }
+
+
+            }
+        </tbody>
+    </table>
+    <div id="ViewTable">
+
+    </div>
+}
+
+<input type="hidden" id="urlExport" value="@Url.Action("ExportExcelBaoCao")" />
+<div id="Padding">
+    @Html.BuildPagingButtons(Model._paging)
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.date')
+            .datepicker({
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                language: 'vi',
+                todayHighlight: true,
+            });
+        $("tr").hover(function () {
+            $(this).css("background-color", "#e7f8fe");
+        }, function () {
+            $(this).css("background-color", "");
+        });
+
+        $("#tblNhuCauChiQuy .gr_search").each(function (index, value) {
+            $(this).keypress(function (e) {
+                if (e.which == 13) {//Enter key pressed
+                    ChangePage();
+                }
+            });
+        });
+        /*formatMoney();*/
+    });
+
+</script>
+
+<style>
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 30px;
+        background-color: #f9f9f9;
+        min-width: 140px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+        .dropdown-content button {
+            color: black;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ff6002
+        }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .dropbtn {
+        background-color: #ff6002;
+    }
+</style>

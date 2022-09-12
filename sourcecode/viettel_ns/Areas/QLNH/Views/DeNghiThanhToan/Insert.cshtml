@@ -1,0 +1,268 @@
+﻿@using Viettel.Models.QLNH
+@model ThongTinThanhToanDetaiModel
+@{
+    ViewBag.Title = "Tạo mới đề nghị thanh toán";
+    Layout = "~/Views/Shared/_LayoutWebNew.cshtml";
+}
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/Content/css/DanhMuc/style.css">
+}
+<div class="main">
+    <div class="panel-list-item col-sm-12">
+        <div class="card">
+            <div class="card-body create_dntt">
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <h4 class="color-text-red">Thông tin chung</h4>
+                        <hr class='color-background-red' />
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="drpDonViQuanLy" class="">Đơn vị <span class="require">*</span> </label>
+                                @Html.DropDownList("iID_Ma", (SelectList)(ViewBag.lstNSDonVi), "--Chọn đơn vị--", new { @class = "form-control", @id = "idonvi", @onchange = "onChangeDonVi()" })
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtngaydenghi">Ngày đề nghị</label>
+                                <div class='input-group date'>
+                                    <input type='text' class="form-control" value="" id="ingaydenghi" autocomplete="off" />
+                                    <span class="btn-default input-group-addon">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtsodenghi">Số đề nghị <span class="require">*</span> </label>
+                                <input class="form-control" id="isodenghi" />
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpLoaiNoiDung" class=""> Loại nội dung <span class="require">*</span></label>
+                                <select class="form-control" id="iloainoidung">
+                                    <option value=""> -- Chọn loại nội dung -- </option>
+                                    <option value="1"> Chi ngoại tệ </option>
+                                    <option value="2"> Chi trong nước </option>
+                                </select>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpTenChuongTrinh" class="">Tên chương trình <span class="require">*</span></label>
+                                @Html.DropDownList("ID", (SelectList)(ViewBag.lstNhiemVuChi), "--Chọn nhiệm vụ chi--", new { @class = "form-control", @id = "itenchuongtrinh", @onchange = "onChangeNhiemVuChi()" })
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpChuDauTu" class=""> Chủ đầu tư <span class="require">*</span></label>
+                                @Html.DropDownList("ID", (SelectList)(ViewBag.lstChuDauTu), "--Chọn chủ đầu tư--", new { @class = "form-control", @id = "ichudautu", @onchange = "onChangeChuDauTu()" })
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="drpThanhToanTheo" class=""> Thanh toán theo <span class="require">*</span></label>
+                                <select class="form-control" id="ithanhtoantheo" onchange="onChangeThanhToanTheo()">
+                                    <option value=""> -- Chọn nội dung thanh toán -- </option>
+                                    <option value="1"> Nội dung chi theo hợp đồng </option>
+                                    <option value="2"> Nội dung chi theo dự án, không hình thành hợp đồng </option>
+                                    <option value="3"> Nội dung chi không theo dự án, không hình thành hợp đồng </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2" id="dhopdong">
+                                <label for="drpTenHopDong" class=""> Tên hợp đồng </label>
+                                <select class="form-control" id="itenhopdong" onchange="onChangeHopDong()">
+                                </select>
+                            </div>
+                            <div class="col-sm-2" id="dduan">
+                                <label for="drpTenDuAn" class=""> Tên dự án </label>
+                                <select class="form-control" id="itenduan" onchange="onChangeDuAn()">
+                                </select>
+                            </div>
+                            <div class="col-sm-2" id="dcancu">
+                                <label for="txtCanCu" class=""> Căn cứ </label>
+                                <input id="icancu" class="form-control" />
+                            </div>
+                            <div class="col-sm-2" id="ddutoanusd">
+                                <label for="txtGiaTriDDUSD" class=""> Giá trị dự toán được duyệt(USD) </label>
+                                <input id="iddutoanusd" onkeyup="ValidateNumberKeyUp(this)" class="form-control text-right " disabled />
+                            </div>
+                            <div class="col-sm-2" id="ddutoanvnd">
+                                <label for="txtGiaTriDDVND" class=""> Giá trị dự toán được duyệt(VND) </label>
+                                <input id="iddutoanvnd" onkeyup="ValidateNumberKeyUp(this)" class="form-control text-right " disabled />
+                            </div>
+                            <div class="col-sm-2" id="dhodongusd">
+                                <label for="txtGiaTriHDUSD" class=""> Giá trị hợp đồng được duyệt(USD) </label>
+                                <input id="igtrhopdongusd" onkeyup="ValidateNumberKeyUp(this)" class="form-control text-right " disabled />
+                            </div>
+                            <div class="col-sm-2" id="dhodongvnd">
+                                <label for="txtGiaTriHDVND" class="">Giá trị hợp đồng được duyệt(VND) </label>
+                                <input id="igtrhopdongvnd" onkeyup="ValidateNumberKeyUp(this)" class="form-control text-right " disabled />
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="txtLyKeKinhPhiUSD" class="">Lũy kế kinh phí được cấp, thanh toán đến cuối kỳ trước (USD) </label>
+                                <div>
+                                    <input id="iluykekinhphiusd" style="float:left" value="@(ViewBag.fLuyKeUSD)" onkeyup="ValidateNumberKeyUp(this)" class="form-control text-right" disabled />
+                                    <button class="fa fa-refresh ml-10 mt-10" style="position: absolute; border: none" title="Lấy lại lũy kế USD" onclick="LoadThongTinLuyKe(1)"></button>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtLyKeKinhPhiVND" class="">Lũy kế kinh phí được cấp, thanh toán đến cuối kỳ trước (VND) </label>
+                                <div class="">
+                                    <input id="iluykekinhphivnd" style="float:left" value="@(ViewBag.fLuyKeVND)" onkeyup="ValidateNumberKeyUp(this)" class="form-control text-right" disabled />
+                                    <button class="fa fa-refresh ml-10 mt-10 " style="position:absolute; border:none" title="Lấy lại lũy kế VND" onclick="LoadThongTinLuyKe(2)"></button>
+                                </div>
+
+                            </div>
+                            <div class="col-sm-2" style="margin-top:20px">
+                                <label for="drpLoaiDeNghi" class=""> Loại đề nghị <span class="require">*</span></label>
+                                <select class="form-control" id="iloaidenghi" onchange="onChangeLoaiDeNghi()">
+                                    <option value=""> -- Chọn loại đề nghị -- </option>
+                                    <option value="1"> Cấp kinh phí </option>
+                                    <option value="2"> Thanh toán </option>
+                                    <option value="3"> Tạm ứng </option>
+
+                                </select>
+                            </div>
+                            <div class="col-sm-2" style="margin-top:20px">
+                                <label for="drpNamKeHoach" class="">Năm kế hoạch <span class="require">*</span> </label>
+                                <input type="number" id="inamkehoach" class="form-control" value="" maxlength="500" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-2" style="margin-top:20px">
+                                <label for="drpNamNganSach" class="">Năm ngân sách <span class="require">*</span> </label>
+                                <select class="form-control" id="inamngansach">
+                                    <option value=""> -- Chọn năm ngân sách -- </option>
+                                    <option value="1"> Năm nay </option>
+                                    <option value="2"> Năm trước chuyển sang </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2" style="margin-top:20px">
+                                <label for="drpCoQuanThanhToan" class="">Cơ quan thanh toán <span class="require">*</span> </label>
+                                <select class="form-control" id="icoquanthanhtoan">
+                                    <option value=""> -- Chọn cơ quan thanh toán -- </option>
+                                    <option value="1">CTC cấp </option>
+                                    <option value="2"> Đơn vị cấp </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="drpTyGiaDeNghi" class="">Tỉ giá đề nghị <span class="require">*</span> </label>
+                                @Html.DropDownList("ID", (SelectList)(ViewBag.lstTyGiaDeNghi), "--Chọn tỷ giá đề nghị--", new { @class = "form-control", @id = "itigiadenghi", @onchange = "onChangeTiGiaDeNghi()" })
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpTyGiaPheDuyet" class="">Tỉ giá phê duyệt <span class="require">*</span> </label>
+                                @Html.DropDownList("ID", (SelectList)(ViewBag.lstTyGiaDeNghi), "--Chọn tỷ giá phê duyệt--", new { @class = "form-control", @id = "itigiapheduyet", @onchange = "onChangeTiGiaPheDuyet()" })
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="drpTrangThai" class=""> Trạng thái <span class="require">*</span> </label>
+                                <select class="form-control" id="itrangthai">
+                                    <option value=""> -- Chọn trạng thái -- </option>
+                                    <option value="1"> Lưu nháp </option>
+                                    <option value="2"> Chưa được duyệt </option>
+                                    <option value="3"> Đã được duyệt </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <h4 class="color-text-red">Thông tin thanh toán</h4>
+                        <hr class='color-background-red' />
+                        <div class="form-group row">
+                            <div class="input-group-append pull-right  mr-10">
+                                <span class="require text-italic mr-10">Thêm dữ liệu xuống bản chi tiết</span>
+                                <button class="btn btn-primary btn-icon" type="button" onclick="ThemDuLieuChiTiet()">
+                                    <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <table class="table table-bordered scrolldown" id="tblListTTThanhToan">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" width="20%">Mục lục ngân sách</th>
+                                    <th rowspan="2" width="20%">Nội dung chi</th>
+                                    <th width="20%" colspan="2">Số kinh phí đề nghị thanh toán kỳ này</th>
+                                    <th width="30%" colspan="2">Số kinh phí chấp nhận phê duyệt thanh toán kỳ này</th>
+                                    <th rowspan="2" width="10%">Thao tác</th>
+
+                                </tr>
+                                <tr>
+                                    <th>USD</th>
+                                    <th>VND</th>
+                                    <th>USD</th>
+                                    <th>VND</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="text-bold" colspan="2"> Tổng cộng</th>
+                                    <th class="text-bold" id='stongdenghiusd'></th>
+                                    <th class="text-bold" id='stongdenghivnd'></th>
+                                    <th class="text-bold" id='stongduocduyetusd'></th>
+                                    <th class="text-bold" id='stongduocduyetvnd'></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <h4 class="color-text-red">Thông tin đơn vị hưởng thụ</h4>
+                        <hr class='color-background-red' />
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <label for="drpTenDonViHuongThu" class="">Tên đơn vị hưởng thụ <span class="require">*</span> </label>
+                                @Html.DropDownList("ID", (SelectList)(ViewBag.lstDonViHuongThu), "--Chọn đơn vị hưởng thụ --", new { @class = "form-control", @id = "itendonvihuongthu" })
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtChuyenKhoanSo" class="">Chuyển khoản (bằng số) <span class="require">*</span> </label>
+                                <input id="ichuyenkhoanso" onkeyup="ValidateNumberKeyUp(this)" class="form-control" />
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtBangChu" class="">Bằng chữ </label>
+                                <input id="ibangchu" class="form-control" />
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtSoTaiKhoan" class=""> Số tài khoản </label>
+                                <input id="isotaikhoan" class="form-control" />
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="txtTai" class=""> Tại </label>
+                                <input id="itai" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <button class="btn btn-default" onclick="CancelSaveData()"><i class="fa fa-ban" aria-hidden="true"></i><span>Hủy</span></button>
+                    <button class="btn btn-primary" onclick="SaveData()"><i class="fa fa-download" aria-hidden="true"></i><span>Lưu</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Thông tin mục lục ngân sách-->
+<div class="modal fade" id="modalMucLucNganSach" tabindex="-1">
+
+</div>
+
+@* Modal confirm *@
+<div id="divModalConfirm">
+
+</div>
+
+
+
+@section Scripts{
+    <script src="~/Scripts/QLNH/DanhMucNgoaiHoi/jsDeNghiThanhToanInsert.js"></script>
+    <script src="~/Scripts/sheet/jsNumber.js"></script>
+    <script>
+        $(document).ready(function () {
+            LoadThongTinCreate();
+        });
+    </script>
+}
